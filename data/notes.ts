@@ -57,7 +57,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "新版本先与旧版本共存、观察流量迁移、再下线。",
     ],
     pitfall: "用请求参数做版本号，网关路由、缓存、监控都看不见版本维度。",
-    related: ["Schema 前向 / 后向兼容"],
+    related: ["Schema 前向 / 后向兼容", "expand-contract"],
     materials: [
       { title: "Stripe API Versioning", url: "https://docs.stripe.com/api/versioning" },
       { title: "Microsoft REST API Guidelines", url: "https://github.com/microsoft/api-guidelines" },
@@ -100,7 +100,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "校验失败也是结构化错误，走统一错误码体系。",
     ],
     pitfall: "在业务代码深处散落 if 校验——规则不可见、不可测、也测不全。",
-    related: ["OpenAPI"],
+    related: ["OpenAPI", "注入类漏洞族"],
     materials: [{ title: "OWASP Input Validation Cheat Sheet", url: "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html" }],
   },
   "D1|分页": {
@@ -113,7 +113,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "列表三件套——分页 / 排序 / 过滤——统一参数规范，别每个接口自造一套。",
     ],
     pitfall: "offset 深翻页时正好有数据插入，结果出现重复或遗漏。",
-    related: ["统一响应模型"],
+    related: ["统一响应模型", "索引与查询计划"],
     materials: [{ title: "Slack Pagination (cursor) 文档", url: "https://api.slack.com/docs/pagination" }],
   },
   "D1|OpenAPI": {
@@ -142,6 +142,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "为了用新技术把对外 API 从 REST 迁到 GraphQL，客户端和整套缓存体系全部重学。",
     related: ["OpenAPI", "消息投递语义"],
+    materials: [{ title: "martinfowler.com · Richardson Maturity Model", url: "https://martinfowler.com/articles/richardsonMaturityModel.html" }],
   },
   "D1|消息投递语义": {
     def: "消息系统的三种交付承诺——at-most-once / at-least-once / exactly-once——以及 DLQ、重投、顺序的工程含义。",
@@ -229,6 +230,10 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "冲突率高还坚持乐观锁，重试风暴比锁等待更伤。",
     related: ["竞态条件", "事务与隔离级别", "审计字段"],
+    materials: [
+      { title: "PoEAA · Optimistic Offline Lock", url: "https://martinfowler.com/eaaCatalog/optimisticOfflineLock.html" },
+      { title: "PoEAA · Pessimistic Offline Lock", url: "https://martinfowler.com/eaaCatalog/pessimisticOfflineLock.html" },
+    ],
   },
   "D2|唯一约束": {
     def: "用数据库唯一索引兜底业务唯一性（一手机号一账号、一键一订单）。",
@@ -240,6 +245,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "只在应用层查重——两个请求同时通过检查，双双插入成功。",
     related: ["幂等 token", "竞态条件"],
+    materials: [{ title: "PostgreSQL · 约束（唯一 / 主键 / 外键）", url: "https://www.postgresql.org/docs/current/ddl-constraints.html" }],
   },
   "D2|幂等 token": {
     def: "服务端识别「同一逻辑操作」的凭证；重复提交返回首次结果，而不是再执行一遍。",
@@ -263,6 +269,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "用布尔标志组合表达状态（isActive + isDeleted + isFrozen），组合爆炸且无法校验。",
     related: ["竞态条件", "乐观锁 · 悲观锁"],
+    materials: [{ title: "有限状态机（Wikipedia）", url: "https://en.wikipedia.org/wiki/Finite-state_machine" }],
   },
   "D2|定时任务与调度": {
     def: "周期性后台作业的治理：幂等执行、多实例互斥、错过与错峰策略。",
@@ -345,6 +352,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "全链路本地时间，夏令时切换那天只有 23 小时——所有按天结算的任务全错。",
     related: ["审计字段", "定时任务与调度", "数据建模"],
+    materials: [{ title: "Falsehoods Programmers Believe About Time", url: "https://infiniteundo.com/post/25326999628/falsehoods-programmers-believe-about-time" }],
   },
   "D3|迁移版本化": {
     def: "schema 变更走版本化脚本，进代码库、可评审、可回滚、可重放。",
@@ -355,7 +363,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "每次迁移在所有环境按同样顺序重放。",
     ],
     pitfall: "上线前手改表结构，环境之间 schema 漂移，问题只在生产出现。",
-    related: ["expand-contract"],
+    related: ["expand-contract", "Schema 前向 / 后向兼容"],
     materials: [
       { title: "Flyway", url: "https://flywaydb.org/" },
       { title: "Liquibase", url: "https://www.liquibase.org/" },
@@ -383,7 +391,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "三大经典故障要对答如流：穿透（查不存在的键→空值缓存/布隆过滤器）、击穿（热键过期→互斥单飞/逻辑过期）、雪崩（集体过期→TTL 打散/高可用集群）。",
     ],
     pitfall: "追求强一致缓存，最后做成了分布式事务——成本远超收益。",
-    related: ["最终一致性"],
+    related: ["最终一致性", "HTTP 缓存语义"],
     materials: [
       { title: "Cache-Aside Pattern", url: "https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside" },
       { title: "小林coding · 缓存雪崩/击穿/穿透", url: "https://www.xiaolincoding.com/redis/base/redis_interview.html" },
@@ -398,7 +406,8 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "合规要求物理删除时，走匿名化替代。",
     ],
     pitfall: "唯一索引没处理软删——同名记录删除后，第二次创建失败。",
-    related: ["审计字段"],
+    related: ["审计字段", "数据生命周期"],
+    materials: [{ title: "thoughtbot · The Hard Truth About Soft Deletion", url: "https://thoughtbot.com/blog/the-hard-truth-about-soft-deletion" }],
   },
   "D3|审计字段": {
     def: "created_at / updated_at / created_by / version 等元数据字段，全表标准化。",
@@ -410,6 +419,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "依赖应用服务器时钟填时间戳，机器之间漂移几秒，时序全乱。",
     related: ["乐观锁 · 悲观锁", "软删除", "审计日志"],
+    materials: [{ title: "系统版本临时表 · SQL Server 官方文档", url: "https://learn.microsoft.com/en-us/sql/relational-databases/tables/temporal-tables" }],
   },
   "D3|索引与查询计划": {
     def: "用 B+ 树等结构让查询走对路径：索引设计 + EXPLAIN 读执行计划。",
@@ -442,7 +452,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
   },
   "D3|事件发件箱（outbox）": {
     def: "业务写库时把「待发事件」写进同一个库的 outbox 表，由独立进程投递——把双写变成单事务。",
-    why: "「提交 DB + 发消息」两步没有原子性：消息丢了或发了没提交，状态与事件就不一致。",
+    why: "「提交数据库 + 发消息」两步没有原子性：消息丢了或发了没提交，状态与事件就不一致。",
     points: [
       "outbox 记录与业务变更写在同一个本地事务里。",
       "投递器轮询或订阅 binlog（CDC）读出并发布。",
@@ -471,7 +481,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
   },
   "D3|无状态与状态外置": {
-    def: "进程不保存会话、文件等业务状态——状态放 DB、缓存、对象存储，进程随时可杀可换。",
+    def: "进程不保存会话、文件等业务状态——状态放数据库、缓存、对象存储，进程随时可杀可换。",
     why: "水平扩展与滚动发布的共同前提：实例无差别，流量才能任意调度（N2/N5 的集群形态）。",
     points: [
       "会话外置（Redis / 自包含令牌），本地内存里不放任何跨请求状态。",
@@ -516,12 +526,12 @@ export const conceptNotes: Record<string, ConceptNote> = {
     def: "给整条调用链定一个端到端总时限，再倒推分配到每一跳。",
     why: "没有超时的调用等于随机挂死（D4 不变量）；超时不是拍脑袋，是预算分配。",
     points: [
-      "预算从「用户可容忍延迟」倒推：总预算 3s，网关 0.5s、服务 1.5s、DB 1s。",
+      "预算从「用户可容忍延迟」倒推：总预算 3s，网关 0.5s、服务 1.5s、数据库 1s。",
       "上游超时 ≥ 下游各跳之和，否则上游先放弃、下游还在空转。",
       "连接超时、读超时、写超时分开设置。",
     ],
     pitfall: "每层都设 30s，端到端一个请求能挂 90 秒。",
-    related: ["重试 · 退避 · 抖动"],
+    related: ["重试 · 退避 · 抖动", "容量规划与压测"],
     materials: [{ title: "《Google SRE》· 处理过载", url: "https://sre.google/sre-book/handling-overload/" }],
   },
   "D4|重试 · 退避 · 抖动": {
@@ -573,6 +583,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "第一次真降级时，兜底逻辑自己抛 NPE。",
     related: ["熔断", "最终一致性"],
+    materials: [{ title: "《Google SRE》· 级联故障与降级", url: "https://sre.google/sre-book/addressing-cascading-failures/" }],
   },
   "D4|背压": {
     def: "下游过载时上游能感知并主动减速：有界队列 + 显式拒绝策略。",
@@ -584,6 +595,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "用无界线程池「吸收」洪峰，最后 OOM 全量失败。",
     related: ["舱壁隔离", "重试 · 退避 · 抖动"],
+    materials: [{ title: "Reactive Streams JVM 规范 · Backpressure", url: "https://github.com/reactive-streams/reactive-streams-jvm" }],
   },
   "D4|最终一致性": {
     def: "接受副本短暂不一致，换取分区下的可用性；前提是收敛可定义、可测量。",
@@ -594,7 +606,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "「读己之写」需要会话粘性或读主库。",
     ],
     pitfall: "把「最终一致」当「不管一致」——从不测量收敛延迟，也不知道坏了多久。",
-    related: ["缓存一致性"],
+    related: ["缓存一致性", "分布式事务与 Saga"],
     materials: [{ title: "《DDIA》第 5、9 章", url: "https://dataintensive.net/" }],
   },
   "D4|限流与配额": {
@@ -633,10 +645,11 @@ export const conceptNotes: Record<string, ConceptNote> = {
     points: [
       "读流量靠 readiness 摘除；写流量等队列排空或交接。",
       "停机设最长等待时限，超时强退并告警——别无限等。",
-      "健康检查要探测真实依赖（DB 连通），不是只回 200。",
+      "健康检查要探测真实依赖（数据库连通），不是只回 200。",
     ],
     pitfall: "kill 直接杀进程，在途请求全部 502，每次发布都有分钟级报错尖刺。",
     related: ["负载均衡与网关", "CI/CD"],
+    materials: [{ title: "Kubernetes · Pod 生命周期与终止（SIGTERM 宽限期）", url: "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/" }],
   },
   "D4|容量规划与压测": {
     def: "用压测找到系统的真实极限，按增长预期规划资源——限流阈值和 SLO 承诺的依据都来自这里。",
@@ -703,7 +716,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "SLO 基于 RED 定义，而不是基于资源利用率。",
     ],
     pitfall: "只看全局平均延迟，长尾用户的存在被平均数抹掉。",
-    related: ["告警分级"],
+    related: ["告警分级", "SLO 与错误预算"],
     materials: [
       { title: "《Google SRE》· 监控分布式系统", url: "https://sre.google/sre-book/monitoring-distributed-systems/" },
       { title: "Grafana · The RED Method", url: "https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/" },
@@ -718,7 +731,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "采样决策要全链路一致，否则链路拼不起来。",
     ],
     pitfall: "各服务各自随机采样，到了聚合端一条完整链路都拼不出。",
-    related: ["traceId · spanId（OpenTelemetry）"],
+    related: ["traceId · spanId（OpenTelemetry）", "traceId · spanId（OpenTelemetry）"],
     materials: [{ title: "OpenTelemetry · Sampling", url: "https://opentelemetry.io/docs/concepts/sampling/" }],
   },
   "D5|告警分级": {
@@ -730,7 +743,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "告警附带 runbook 链接。",
     ],
     pitfall: "CPU > 80% 就告警，两周后值班的同学对所有告警免疫。",
-    related: ["RED 指标"],
+    related: ["RED 指标", "值班与升级路径"],
     materials: [{ title: "《Google SRE Workbook》· Alerting on SLOs", url: "https://sre.google/workbook/alerting-on-slos/" }],
   },
   "D5|前端异常上报": {
@@ -742,7 +755,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "带上 traceId 才能和后端链路对上。",
     ],
     pitfall: "前端报错没有 traceId，永远只知道「有错」，不知道「哪一跳错」。",
-    related: ["traceId · spanId（OpenTelemetry）"],
+    related: ["traceId · spanId（OpenTelemetry）", "traceId · spanId（OpenTelemetry）"],
     materials: [
       { title: "OpenTelemetry · Browser（JS）", url: "https://opentelemetry.io/docs/languages/js/getting-started/browser/" },
       { title: "Sentry", url: "https://sentry.io/" },
@@ -808,7 +821,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "Code review 专门盯原生拼接查询。",
     ],
     pitfall: "以为用了 ORM 就免疫——字符串拼接的原生查询照样注入。",
-    related: ["入参声明式校验"],
+    related: ["入参声明式校验", "入参声明式校验"],
     materials: [{ title: "OWASP A03:2021 · Injection", url: "https://owasp.org/Top10/A03_2021-Injection/" }],
   },
   "D6|对象级越权（IDOR）": {
@@ -827,13 +840,14 @@ export const conceptNotes: Record<string, ConceptNote> = {
     def: "默认拒绝，按需授予；权限宁可临时提升，不要长期沉淀。",
     why: "权限面越大，泄露和误操作的爆炸半径越大——它决定「坏的时候有多坏」。",
     points: [
-      "服务账号也一样：应用连 DB 不该用管理员账号。",
+      "服务账号也一样：应用连数据库不该用管理员账号。",
       "数据库账号三分离：应用账号（DML）、迁移账号（DDL）、人工账号（按次审批）。",
       "权限有申请、有到期、有回收。",
       "定期审计特权账号的实际使用。",
     ],
     pitfall: "图省事给服务账号 DBA 权限，「反正内网」。",
     related: ["RBAC · ABAC", "密钥管理"],
+    materials: [{ title: "NIST SP 800-207 · 零信任架构", url: "https://csrc.nist.gov/pubs/sp/800/207/final" }],
   },
   "D6|密钥管理": {
     def: "密钥的生成、存储、轮换、审计的全生命周期管理。",
@@ -860,6 +874,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "日志打了整包请求体，密码和 token 明文进了日志系统。",
     related: ["结构化日志", "审计日志"],
+    materials: [{ title: "OWASP User Privacy Protection Cheat Sheet", url: "https://cheatsheetseries.owasp.org/cheatsheets/User_Privacy_Protection_Cheat_Sheet.html" }],
   },
   "D6|审计日志": {
     def: "「谁、何时、对什么、做了什么」的不可篡改记录，与业务日志分离。",
@@ -932,7 +947,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "技术分层（web/service/dao）在模块内部，不在模块之间。",
     ],
     pitfall: "按 controller/service/dao 分「模块」，所有业务横向散开，改一个需求跨五个目录。",
-    related: ["依赖规则（单向 · 无环）"],
+    related: ["依赖规则（单向 · 无环）", "康威定律与团队边界"],
     materials: [{ title: "Kamil Grzybek · Modular Monolith 系列", url: "https://www.kamilgrzybek.com/blog/posts/modular-monolith-domain-centric-design" }],
   },
   "D7|依赖规则（单向 · 无环）": {
@@ -945,6 +960,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "循环依赖靠「再抽一个 common」缓解，common 变成垃圾场。",
     related: ["模块边界", "规范自动化（lint · 门禁）"],
+    materials: [{ title: "Uncle Bob · The Clean Architecture（依赖规则）", url: "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" }],
   },
   "D7|规范自动化（lint · 门禁）": {
     def: "把约定翻译成 CI 里机器可检查的规则，违规即失败。",
@@ -956,17 +972,18 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "规则一次上太多，团队全关掉，lint 形同虚设。",
     related: ["CI/CD", "依赖规则（单向 · 无环）"],
+    materials: [{ title: "pre-commit · Git 钩子门禁框架", url: "https://pre-commit.com/" }],
   },
   "D7|测试金字塔": {
     def: "单元测试多、集成测试少、端到端更少——按反馈速度分层。",
     why: "层级越高，反馈越慢、越不稳定；金字塔形状是维护成本的自然结果。",
     points: [
       "单元测试测行为不测实现，实现变了测试不该红。",
-      "集成测试集中在边界：DB、消息、外部服务。",
+      "集成测试集中在边界：数据库、消息、外部服务。",
       "端到端只留关键路径冒烟，别拿它当功能回归。",
     ],
     pitfall: "全靠集成测试，一次 40 分钟还随机红，慢慢地没人再跑。",
-    related: ["CI/CD"],
+    related: ["CI/CD", "契约测试"],
     materials: [{ title: "martinfowler.com · Test Pyramid", url: "https://martinfowler.com/bliki/TestPyramid.html" }],
   },
   "D7|CI/CD": {
@@ -990,7 +1007,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "新同学 onboarding 的第一份读物。",
     ],
     pitfall: "决策只活在会议纪要里，换个人就找不到了。",
-    related: ["模块边界"],
+    related: ["模块边界", "文档与 Runbook"],
     materials: [{ title: "adr.github.io · 架构决策记录", url: "https://adr.github.io/" }],
   },
   "D7|功能开关与灰度发布": {
@@ -1042,6 +1059,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "全员都是 owner = 没人是 owner；审批最终沦为「随手点同意」。",
     related: ["模块边界", "代码评审（Code Review）", "ADR 架构决策记录"],
+    materials: [{ title: "GitHub · About Code Owners", url: "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners" }],
   },
   "D7|第三方依赖管理": {
     def: "锁文件锁定版本、升级有节奏、漏洞有响应的依赖全生命周期管理。",
@@ -1065,6 +1083,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "「忙完这阵就重构」——那阵永远不会来，利息按月复利。",
     related: ["ADR 架构决策记录", "代码评审（Code Review）", "功能开关与灰度发布"],
+    materials: [{ title: "martinfowler.com · Technical Debt", url: "https://martinfowler.com/bliki/TechnicalDebt.html" }],
   },
   "D7|弃用与下线流程": {
     def: "旧接口、旧字段的退场管理：公告、按调用方监控使用量、迁移文档、到期下线。",
@@ -1112,6 +1131,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
     ],
     pitfall: "文档写完即过期——没人负责的 wiki 页比空白更误导。",
     related: ["ADR 架构决策记录", "告警分级", "值班与升级路径"],
+    materials: [{ title: "《Google SRE Workbook》· 事故响应与 Runbook", url: "https://sre.google/workbook/incident-response/" }],
   },
 };
 
