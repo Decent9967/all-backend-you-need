@@ -107,6 +107,10 @@ const nodeMap = new Map<string, RMNode>();
 const groupMap = new Map<string, RMGroup>();
 const id2anchor = new Map<string, { x: number; y: number; w: number; h: number }>();
 
+/* 进度语义：只有「学过的知识」计入进度——概念、毕业闸、两个出口。
+   本性/三层/方法步骤是框架的脚手架，勾「已掌握」没有意义。 */
+const MASTERABLE = new Set<RMKind>(["concept", "checkpoint", "decision", "synthesis"]);
+
 function pushNode(n: RMNode) {
   nodes.push(n);
   nodeMap.set(n.id, n);
@@ -180,7 +184,7 @@ function stage(opts: {
         pushNode({
           ...lf,
           variant: lf.variant ?? "pale",
-          checkable: true,
+          checkable: MASTERABLE.has(lf.kind),
           x: side === "L" ? LEFT_X1 - p.w : RIGHT_X0,
           y: Math.round(yy),
           w: p.w,
@@ -207,7 +211,7 @@ function stage(opts: {
             pushNode({
               ...lf,
               variant: lf.variant ?? "pale",
-              checkable: true,
+              checkable: MASTERABLE.has(lf.kind),
               rowTitle: g.title,
               x: Math.round(x0 + shift),
               y: Math.round(iy + r * (NODE_H + VGAP)),
@@ -218,7 +222,7 @@ function stage(opts: {
           iy += Math.ceil(gridLeaves.length / plan.cols) * NODE_H + (Math.ceil(gridLeaves.length / plan.cols) - 1) * VGAP + VGAP;
         }
         fullLeaves.forEach((lf) => {
-          pushNode({ ...lf, variant: lf.variant ?? "plain", checkable: true, rowTitle: g.title, x: gx + 14, y: Math.round(iy), w: p.w - 28, h: NODE_H });
+          pushNode({ ...lf, variant: lf.variant ?? "plain", checkable: MASTERABLE.has(lf.kind), rowTitle: g.title, x: gx + 14, y: Math.round(iy), w: p.w - 28, h: NODE_H });
           iy += NODE_H + VGAP;
         });
       }
