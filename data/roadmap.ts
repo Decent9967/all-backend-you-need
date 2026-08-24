@@ -359,8 +359,16 @@ function conceptLeaves(domainId: string, names: string[]): Leaf[] {
   });
 }
 
-/* 自检题归属（正确项所在域） */
-const GATE_CHECK: Record<string, string> = { D2: "check1", D6: "check3" };
+/* 自检题归属（正确项所在域）：七域全覆盖 */
+const GATE_CHECK: Record<string, string> = {
+  D1: "check4",
+  D2: "check1",
+  D3: "check5",
+  D4: "check6",
+  D5: "check7",
+  D6: "check3",
+  D7: "check8",
+};
 
 const NAT_NAME: Record<string, string> = Object.fromEntries(natures.map((n) => [n.id, n.name]));
 

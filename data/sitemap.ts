@@ -84,6 +84,56 @@ export const checks: Record<string, Check> = {
     explanation:
       "密钥管理属于 D6 安全；「机器可检查」属于 D7 的不变量，别混淆两者。",
   },
+  check4: {
+    question: "线上接口要给「订单状态」枚举加一个新值「部分退款」。哪种做法不破坏既有调用方？",
+    options: [
+      { label: "直接把旧枚举值改名，公告里说明", correct: false },
+      { label: "只新增枚举值、旧值语义不动，客户端对未知值有兜底", correct: true },
+      { label: "和所有调用方约定同一天一起上线切换", correct: false },
+    ],
+    explanation:
+      "契约只能加字段、不能改语义；「所有人同时上线」在分布式里是幻觉，新值兼容 + 未知值兜底才安全。",
+  },
+  check5: {
+    question: "新代码已发布一半，这时要删一个数据库字段。正确的顺序是？",
+    options: [
+      { label: "先删字段，旧代码报错会触发自动回滚", correct: false },
+      { label: "发布和删字段放进同一个上线单，原子完成", correct: false },
+      { label: "expand-contract：新旧代码先共存于同一 schema，全量切换后再删", correct: true },
+    ],
+    explanation:
+      "schema 变更与代码发布必须解耦——新旧版本代码要能跑在同一个 schema 上，这是 D3 的第一条不变量。",
+  },
+  check6: {
+    question: "服务 A→B→C 三层各自都配了「失败就重试 3 次」。下游 C 故障时，最可能的连锁反应是？",
+    options: [
+      { label: "没有影响，重试是保护机制", correct: false },
+      { label: "熔断器会自动扩容扛住", correct: false },
+      { label: "重试风暴：C 的故障被 A、B 两层放大成数倍流量", correct: true },
+    ],
+    explanation:
+      "每层各自重试会指数放大下游流量；重试要受端到端预算约束——超时从总预算倒推分配，这是 D4 的不变量。",
+  },
+  check7: {
+    question: "用户反馈「下单偶尔很慢」，而你手上只有各机器的分片日志。最先补上的是什么？",
+    options: [
+      { label: "traceId 从前端生成，贯穿网关、服务、数据库", correct: true },
+      { label: "把日志级别全部调成 DEBUG", correct: false },
+      { label: "加机器分散日志压力", correct: false },
+    ],
+    explanation:
+      "没有 traceId 贯穿，排障就靠运气；指标说哪里、日志说为什么、追踪说哪一跳——三者不可互替，这是 D5 的不变量。",
+  },
+  check8: {
+    question: "团队约定「service 层之间不允许互相 import」。半年后如何确认这条约定还活着？",
+    options: [
+      { label: "写进 wiki，每季度宣读一次", correct: false },
+      { label: "靠 code review 时人肉记住", correct: false },
+      { label: "写进 lint 门禁/依赖检查，CI 违反即红", correct: true },
+    ],
+    explanation:
+      "口头约定必然腐化，只有机器可检查的约定能存活；依赖图无环同样是 CI 可查的——这是 D7 的不变量。",
+  },
 };
 
 export type Step = {
