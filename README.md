@@ -66,20 +66,29 @@ Balsamiq Sans 手写体、蓝色 `#2b78e4` 3.5px 圆头连线（实线主线 / �
 笔记数据在 `data/notes.ts`，按 `域ID|概念名` 索引；
 新增概念只需在 `framework.ts` 加概念、在 `notes.ts` 补一条笔记（有校对脚本可对账缺失）。
 
-「深入材料」已挂真实链接（67 条笔记 / 96 条材料 / 94 个外链 + 2 条无公开电子版的书籍纯文本，
-链接来源：OWASP / Google SRE / martinfowler.com / microservices.io / RFC / 12-Factor 中文版 /
-官方文档与规范原文），全部经 HTTP 探测确认可访问；`node scripts/check-material-urls.mjs`
-可随时复查链接存活，`scripts/verify-material-links.mjs` 对照浏览器渲染核对（配 Playwright 扫描）。
+「深入材料」已挂真实链接（**84 条笔记全部有材料**：114 条材料、102 个去重外链 +
+2 条无公开电子版的书籍纯文本，链接来源：OWASP / Google SRE / martinfowler.com /
+microservices.io / RFC / 12-Factor 中文版 / PoEAA / NIST / K8s / 官方文档与规范原文），
+全部经 HTTP 探测确认可访问；`node scripts/check-material-urls.mjs`
+可随时复查链接存活，`scripts/verify-related.mjs` 校验相关概念引用零悬空，
+`scripts/verify-material-links.mjs` 对照浏览器渲染核对（配 Playwright 扫描）。
 
 其中 D2（竞态时序）、D4（熔断状态机）的概念图在域面板内支持 **PPT 式分幕搭建**。
 
 ## 交互
 
-- 点击节点 → 右侧抽屉（hash 路由 `#/d2-c0`，可刷新、可分享）
-- 节点右上角圈：勾选"已掌握"；进度存 localStorage（加载时自动剔除失效 id），
-  顶栏显示 `x / 107` 与进度条，可重置
-- 抽屉内：上一个 / 下一个 / 标记已掌握；Esc 关闭；键盘 ← → 切换节点
+- **站内搜索**：顶栏输入框（Ctrl/Cmd+K 聚焦），标题/域名/类型匹配，
+  ↑↓ 选择、Enter 打开并定位到画布节点
+- 点击节点 → 右侧抽屉（hash 路由 `#/d2-c0`，可刷新、可分享）；
+  深链进入时节点自动滚到视口中央并蓝色高亮一瞬，无效链接归位画布并提示
+- 节点右上角圈：勾选"已掌握"；进度只统计知识点/毕业闸/出口（`x / 93`），
+  本性/三层/方法步骤是脚手架不计入；进度存 localStorage（自动剔除失效 id），可重置
+- 抽屉内：上一个 / 下一个 / 标记已掌握；Esc 关闭；键盘 ← → 切换节点。
+  「下一个」按子主题行的教学顺序走（与左右分列的几何位置无关），
+  概念抽屉顶部有子主题面包屑
+- 七个毕业闸统一为「不变量复述 + 一道检索题」，选错也显示正确项与解析
 - 旧链接兼容：`#/natures` → N1，`#/layers` → L3，未知 → 画布
+- 移动端：画布横向滑动查看全图（进入时提示一次），顶栏搜索折行
 
 ## 教学设计依据
 

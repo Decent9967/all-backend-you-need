@@ -2312,6 +2312,40 @@ button.ft-row:hover .ft-label {
   margin-inline: auto;
 }
 
+/* 移动端画布横向滚动引导（6 秒后淡出） */
+
+.rm-swipe-hint {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .rm-swipe-hint {
+    display: block;
+    text-align: center;
+    font-family: var(--hand);
+    font-size: 13px;
+    color: #666;
+    padding: 2px 0 10px;
+    animation: rm-hint-fade 6s ease forwards;
+  }
+}
+
+@keyframes rm-hint-fade {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-swipe-hint {
+    animation: none;
+  }
+}
+
 .rm-svg {
   display: block;
   width: 100%;

@@ -33,7 +33,11 @@ export default function RoadmapCanvas({
     .filter((n): n is RMNode => Boolean(n));
 
   return (
-    <div className="figure rm-figure">
+    <>
+      <div className="rm-swipe-hint" aria-hidden="true">
+        ← 左右滑动查看全图 →
+      </div>
+      <div className="figure rm-figure">
       <svg
         className="rm-svg"
         viewBox={`0 0 ${canvas.width} ${canvas.height}`}
@@ -151,6 +155,7 @@ export default function RoadmapCanvas({
           );
         })}
       </svg>
-    </div>
+      </div>
+    </>
   );
 }
