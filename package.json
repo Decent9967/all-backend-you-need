@@ -1,8 +1,8 @@
 {
-  "name": "backend-knowledge-framework",
+  "name": "all-backend-you-need",
   "version": "1.0.0",
   "private": true,
-  "description": "跨语言后端工程治理知识框架 —— 一张知识图纸",
+  "description": "ALL BACKEND YOU NEED —— 跨语言后端工程治理知识框架，一张知识图纸",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

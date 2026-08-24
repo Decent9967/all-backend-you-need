@@ -18,7 +18,7 @@ export function TopBar({
         <a className="topbar-brand" href="#/" aria-label="回到路线图">
           KB-01
         </a>
-        <span className="topbar-title">后端工程治理知识框架 · Roadmap</span>
+        <span className="topbar-title">ALL BACKEND YOU NEED · 后端工程治理知识框架</span>
         <div className="tb-progress">
           <span className="tb-count">
             {done} / {total}

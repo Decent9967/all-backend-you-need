@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "后端工程治理知识框架 · KB-01",
+  title: "ALL BACKEND YOU NEED · 后端工程治理知识框架",
   description:
     "跨语言的通用知识体系：五个本性、三层知识模型、七个治理域，以及换语言也不失效的不变量。",
 };

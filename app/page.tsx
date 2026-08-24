@@ -97,8 +97,8 @@ export default function Page() {
       <TopBar done={done.size} onReset={() => setDone(new Set())} />
       <div className="sheet-wrap map-wrap">
         <main className="map-head" aria-live="polite">
-          <p className="eyebrow">KB-01 · ROADMAP</p>
-          <h1 className="map-title">后端工程治理知识框架</h1>
+          <p className="eyebrow">KB-01 · 后端工程治理知识框架</p>
+          <h1 className="map-title">ALL BACKEND YOU NEED</h1>
           <p className="map-lede">
             沿中间亮黄主线一站站走：起点讲清「为什么是这七件事」，D1–D7 的知识点
             分列主线两侧，灰色闸是每站的毕业标准，底部紫色是出口。
