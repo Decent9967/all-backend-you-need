@@ -1,13 +1,16 @@
 import { checkableCount } from "@/data/roadmap";
+import TopSearch from "@/components/TopSearch";
 
-/* ---------- 顶栏：品牌 + 标题 + 学习进度 ---------- */
+/* ---------- 顶栏：品牌 + 标题 + 搜索 + 学习进度 ---------- */
 
 export function TopBar({
   done,
   onReset,
+  onOpen,
 }: {
   done: number;
   onReset: () => void;
+  onOpen: (id: string) => void;
 }) {
   const total = checkableCount;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -19,6 +22,7 @@ export function TopBar({
           KB-01
         </a>
         <span className="topbar-title">ALL BACKEND YOU NEED · 后端工程治理知识框架</span>
+        <TopSearch onOpen={onOpen} />
         <div className="tb-progress">
           <span className="tb-count">
             {done} / {total}

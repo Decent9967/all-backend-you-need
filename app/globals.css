@@ -127,6 +127,128 @@ button:focus-visible,
   margin-inline: auto;
 }
 
+/* ---------- 顶栏搜索 ---------- */
+
+.tb-search {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+  margin-left: auto;
+}
+
+.tb-search input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--hand);
+  font-size: 14px;
+  color: var(--rm-ink);
+  background: #fff;
+  border: 2px solid var(--rm-ink);
+  border-radius: 6px;
+  padding: 6px 12px;
+  outline: none;
+}
+
+.tb-search input:focus {
+  border-color: var(--rm-blue);
+  box-shadow: 2px 2px 0 rgba(43, 120, 228, 0.25);
+}
+
+.tb-search-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 300px;
+  z-index: 70;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: #fff;
+  border: 2px solid var(--rm-ink);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 rgba(17, 17, 17, 0.18);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.tb-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--hand);
+  font-size: 14px;
+}
+
+.tb-opt-active {
+  background: var(--rm-yellow2);
+}
+
+.tb-opt-kind {
+  flex: none;
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1.5px solid var(--rm-ink);
+  border-radius: 4px;
+  background: #f4f4f4;
+}
+
+.tb-opt-kind.k-concept {
+  background: var(--rm-yellow2);
+}
+
+.tb-opt-kind.k-checkpoint {
+  background: #dedede;
+}
+
+.tb-opt-kind.k-decision,
+.tb-opt-kind.k-synthesis {
+  background: var(--rm-purple);
+  color: #fff;
+  border-color: var(--rm-purple);
+}
+
+.tb-opt-kind.k-domain-header {
+  background: var(--rm-yellow);
+}
+
+.tb-opt-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-opt-domain {
+  flex: none;
+  font-size: 11px;
+  color: #777;
+}
+
+.tb-opt-empty {
+  padding: 10px;
+  color: #777;
+  cursor: default;
+}
+
+@media (max-width: 980px) {
+  .topbar-inner {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 0;
+    row-gap: 10px;
+  }
+
+  .tb-search {
+    order: 5;
+    flex-basis: 100%;
+    max-width: none;
+  }
+}
+
 .topbar-brand {
   font: 500 11.5px var(--mono);
   letter-spacing: 0.1em;

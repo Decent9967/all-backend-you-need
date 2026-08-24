@@ -90,6 +90,8 @@ export default function Page() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      /* 搜索框聚焦时快捷键归它管（↑↓ 选择、Esc 关词表） */
+      if ((e.target as HTMLElement | null)?.tagName === "INPUT") return;
       if (e.key === "Escape" && sel) {
         close();
         return;
@@ -122,7 +124,7 @@ export default function Page() {
 
   return (
     <div className="app-shell">
-      <TopBar done={done.size} onReset={() => setDone(new Set())} />
+      <TopBar done={done.size} onReset={() => setDone(new Set())} onOpen={open} />
       <div className="sheet-wrap map-wrap">
         <main className="map-head" aria-live="polite">
           <p className="eyebrow">KB-01 · 后端工程治理知识框架</p>
