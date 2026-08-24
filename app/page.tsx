@@ -41,11 +41,25 @@ export default function Page() {
   const [sel, setSel] = useState<string | null>(null);
   const [done, setDone] = useState<Set<string>>(() => new Set());
   const [ready, setReady] = useState(false);
+  const [staleHint, setStaleHint] = useState(false);
 
   useEffect(() => {
     setDone(loadDone());
     setReady(true);
-    const update = () => setSel(parseHash());
+    const update = () => {
+      const id = parseHash();
+      if (id) {
+        setSel(id);
+        return;
+      }
+      /* 无效 hash（节点被重排/拼错）：归位画布并短暂提示，不再静默 */
+      if (window.location.hash !== "" && window.location.hash !== "#/") {
+        window.history.replaceState(null, "", "#/");
+        setStaleHint(true);
+        window.setTimeout(() => setStaleHint(false), 2600);
+      }
+      setSel(null);
+    };
     update();
     window.addEventListener("hashchange", update);
     return () => window.removeEventListener("hashchange", update);
@@ -89,6 +103,20 @@ export default function Page() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [sel]);
+
+  /* 深链/跳转定位：节点不在视口时平滑滚到画布中央，并短暂高亮 */
+  useEffect(() => {
+    if (!ready || !sel) return;
+    const g = document.querySelector<SVGGElement>(`g[data-rm-id="${sel}"]`);
+    if (!g) return;
+    const r = g.getBoundingClientRect();
+    const visible =
+      r.top >= 0 && r.bottom <= window.innerHeight && r.left >= 0 && r.right <= window.innerWidth;
+    if (!visible) g.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+    g.classList.add("rm-flash");
+    const t = window.setTimeout(() => g.classList.remove("rm-flash"), 1500);
+    return () => window.clearTimeout(t);
+  }, [sel, ready]);
 
   const selected = sel ? (sel === "scope" ? scopeNode : nodeById(sel)) : undefined;
 
@@ -138,6 +166,11 @@ export default function Page() {
           onClose={close}
           onOpen={open}
         />
+      ) : null}
+      {staleHint ? (
+        <div className="hash-toast" role="status">
+          链接已失效，已回到画布
+        </div>
       ) : null}
     </div>
   );

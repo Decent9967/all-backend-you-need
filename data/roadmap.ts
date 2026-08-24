@@ -31,6 +31,7 @@ export type RMNode = {
   code?: string;
   domainId?: string;
   checkId?: string;
+  rowTitle?: string; // 所属子主题行标题（组内叶子才有，抽屉面包屑用）
   checkable: boolean;
   variant: RMVariant;
   x: number;
@@ -108,7 +109,6 @@ const id2anchor = new Map<string, { x: number; y: number; w: number; h: number }
 
 function pushNode(n: RMNode) {
   nodes.push(n);
-  orderIds.push(n.id);
   nodeMap.set(n.id, n);
   id2anchor.set(n.id, { x: n.x, y: n.y, w: n.w, h: n.h });
 }
@@ -208,6 +208,7 @@ function stage(opts: {
               ...lf,
               variant: lf.variant ?? "pale",
               checkable: true,
+              rowTitle: g.title,
               x: Math.round(x0 + shift),
               y: Math.round(iy + r * (NODE_H + VGAP)),
               w: plan.colW[c],
@@ -217,7 +218,7 @@ function stage(opts: {
           iy += Math.ceil(gridLeaves.length / plan.cols) * NODE_H + (Math.ceil(gridLeaves.length / plan.cols) - 1) * VGAP + VGAP;
         }
         fullLeaves.forEach((lf) => {
-          pushNode({ ...lf, variant: lf.variant ?? "plain", checkable: true, x: gx + 14, y: Math.round(iy), w: p.w - 28, h: NODE_H });
+          pushNode({ ...lf, variant: lf.variant ?? "plain", checkable: true, rowTitle: g.title, x: gx + 14, y: Math.round(iy), w: p.w - 28, h: NODE_H });
           iy += NODE_H + VGAP;
         });
       }
@@ -245,7 +246,13 @@ function stage(opts: {
   });
   nodeMap.set(opts.id, nodes[nodes.length - 1]);
   id2anchor.set(opts.id, { x: CX - MS_W / 2, y: Math.round(mcy - MS_H / 2), w: MS_W, h: MS_H });
-  orderIds.splice(orderStart, 0, opts.id);
+
+  /* 阅读顺序 = 教学顺序：里程碑 → 各子主题行按 DOMAIN_ROWS 声明序展开（组→叶子原序）→ 毕业闸。
+     与几何放置解耦：左右交替分列只影响位置，不影响「下一个」的走向。 */
+  const itemIds = opts.items.flatMap((it) =>
+    it.kind === "leaf" ? [it.leaf.id] : it.leaves.map((l) => l.id),
+  );
+  orderIds.splice(orderStart, 0, opts.id, ...itemIds, ...(opts.gate ? [`${opts.id}-gate`] : []));
   spineChain.push(opts.id);
 
   /* 毕业闸：卡在主线上 */

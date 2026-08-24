@@ -35,7 +35,7 @@ function DrawerBody({ node, onOpen }: { node: RMNode; onOpen: (id: string) => vo
     case "domain-header":
       return domain ? <DomainView domain={domain} stage={stage} onAdvance={bump} /> : null;
     case "concept":
-      return <ConceptNoteView domainId={node.domainId} title={node.title} onOpen={onOpen} />;
+      return <ConceptNoteView domainId={node.domainId} title={node.title} rowTitle={node.rowTitle} onOpen={onOpen} />;
     case "checkpoint":
       return <CheckpointPanel domainId={node.domainId} checkId={node.checkId} />;
     case "check":

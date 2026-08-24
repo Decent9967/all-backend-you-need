@@ -2543,6 +2543,57 @@ button.ft-row:hover .ft-label {
   border-top: 1px solid var(--hairline);
 }
 
+/* 深链定位：节点蓝色描边高亮一瞬 */
+
+g.rm-flash rect.rm-nbox {
+  animation: rm-flash 1.5s ease-out;
+}
+
+@keyframes rm-flash {
+  0%,
+  65% {
+    stroke: var(--rm-blue);
+    stroke-width: 5;
+  }
+  100% {
+    stroke: var(--rm-ink);
+    stroke-width: 2.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  g.rm-flash rect.rm-nbox {
+    animation-duration: 0.01s;
+  }
+}
+
+/* 无效 hash 提示条 */
+
+.hash-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: var(--rm-ink);
+  color: #fff;
+  font-family: var(--hand);
+  font-size: 14.5px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid #fff;
+  box-shadow: 3px 3px 0 rgba(17, 17, 17, 0.25);
+}
+
+/* 概念笔记：子主题行面包屑 */
+
+.note-row-crumb {
+  font-size: 13.5px;
+  color: #555;
+  margin: 2px 0 0;
+  font-family: var(--hand);
+}
+
 .read-list li:first-child {
   border-top: 0;
 }

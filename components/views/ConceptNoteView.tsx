@@ -6,10 +6,12 @@ import { nodes } from "@/data/roadmap";
 export default function ConceptNoteView({
   domainId,
   title,
+  rowTitle,
   onOpen,
 }: {
   domainId?: string;
   title: string;
+  rowTitle?: string;
   onOpen: (id: string) => void;
 }) {
   const note = domainId ? conceptNotes[`${domainId}|${title}`] : undefined;
@@ -35,6 +37,7 @@ export default function ConceptNoteView({
         <span className="domain-view-id">{domainId}</span>
         <h2 className="domain-view-name">{title}</h2>
       </header>
+      {rowTitle ? <p className="note-row-crumb">子主题 · {rowTitle}</p> : null}
 
       <p className="view-lede note-def">{note.def}</p>
 
