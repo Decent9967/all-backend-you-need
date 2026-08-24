@@ -1,0 +1,17 @@
+# deps
+node_modules/
+
+# build
+.next/
+out/
+
+# logs & local
+*.log
+.next-serve.log
+
+# tooling artifacts
+.playwright-mcp/
+
+# os
+.DS_Store
+Thumbs.db

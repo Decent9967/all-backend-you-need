@@ -1,0 +1,109 @@
+import { conceptNotes } from "@/data/notes";
+import { nodes } from "@/data/roadmap";
+
+/* 概念笔记页：一节点一页——定义 / 为什么 / 关键点 / 误区 / 相关概念跳转 / 材料 */
+
+export default function ConceptNoteView({
+  domainId,
+  title,
+  onOpen,
+}: {
+  domainId?: string;
+  title: string;
+  onOpen: (id: string) => void;
+}) {
+  const note = domainId ? conceptNotes[`${domainId}|${title}`] : undefined;
+  const bid = domainId?.toLowerCase();
+  const domainMilestone = bid ? nodes.find((n) => n.id === bid) : undefined;
+
+  if (!note) {
+    return (
+      <div className="reveal">
+        <p className="figure-note">这条笔记还在编写中——先看所在域的完整面板。</p>
+      </div>
+    );
+  }
+
+  /* 相关概念允许跨域（如 幂等键(D1) ↔ 幂等 token(D2)）：全局按标题匹配概念节点 */
+  const relatedIds = (note.related ?? [])
+    .map((name) => nodes.find((n) => n.kind === "concept" && n.title === name)?.id)
+    .filter(Boolean) as string[];
+
+  return (
+    <div className="reveal">
+      <header className="domain-view-head">
+        <span className="domain-view-id">{domainId}</span>
+        <h2 className="domain-view-name">{title}</h2>
+      </header>
+
+      <p className="view-lede note-def">{note.def}</p>
+
+      <section className="domain-block">
+        <h3 className="mini-label">为什么需要它</h3>
+        <p className="note-why">{note.why}</p>
+      </section>
+
+      <section className="domain-block">
+        <h3 className="mini-label">关键点</h3>
+        <ul className="note-points">
+          {note.points.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+      </section>
+
+      {note.pitfall ? (
+        <section className="domain-block note-pitfall">
+          <h3 className="mini-label">常见误区</h3>
+          <p>{note.pitfall}</p>
+        </section>
+      ) : null}
+
+      {relatedIds.length ? (
+        <section className="domain-block">
+          <h3 className="mini-label">相关概念 · 同域跳转</h3>
+          <ul className="chips chips-click">
+            {relatedIds.map((rid) => {
+              const r = nodes.find((n) => n.id === rid)!;
+              return (
+                <li key={rid}>
+                  <button type="button" onClick={() => onOpen(rid)}>
+                    {r.title}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      {note.materials?.length ? (
+        <section className="domain-block">
+          <h3 className="mini-label">深入材料</h3>
+          <ul className="read-list">
+            {note.materials.map((m) => (
+              <li key={m.title}>
+                {m.url ? (
+                  <a className="note-material" href={m.url} target="_blank" rel="noopener noreferrer">
+                    {m.title} ↗
+                  </a>
+                ) : (
+                  <span className="note-material plain">{m.title}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {domainMilestone ? (
+        <footer className="domain-cross-note">
+          <span className="mini-label">这一站的其他知识</span>
+          <button type="button" className="intro-target" onClick={() => onOpen(bid!)}>
+            查看整个「{domainMilestone.title}」域 →
+          </button>
+        </footer>
+      ) : null}
+    </div>
+  );
+}
