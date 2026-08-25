@@ -88,6 +88,33 @@ export const enTitle: Record<string, string> = {
   "定时任务与调度": "Scheduled Jobs",
   "分布式锁": "Distributed Locks",
   "分布式事务与 Saga": "Distributed Tx & Saga",
+
+  /* D3 子主题行与概念节点 */
+  "先建模：实体与两类特殊值": "Model first: entities & two special values",
+  "安全地变更": "Changing safely",
+  "日常状态": "Everyday state",
+  "状态放哪：进程外": "Where state lives: outside the process",
+  "读得快：索引": "Reading fast: indexes",
+  "装得下：复制与分片": "Fitting more: replication & sharding",
+  "两个系统的一致性": "Consistency across two systems",
+  "流与批：数据管道": "Streams & batches: data pipelines",
+  "数据的生老病死": "The life and death of data",
+  "最后的兜底": "The last resort",
+  "数据建模": "Data Modeling",
+  "金额与精度": "Money & Precision",
+  "时间与时区": "Time & Time Zones",
+  "迁移版本化": "Versioned Migrations",
+  "expand-contract": "Expand-Contract",
+  "缓存一致性": "Cache Consistency",
+  "软删除": "Soft Deletion",
+  "审计字段": "Audit Columns",
+  "索引与查询计划": "Indexes & Query Plans",
+  "复制与分片": "Replication & Sharding",
+  "事件发件箱（outbox）": "Transactional Outbox",
+  "备份与恢复": "Backup & Restore",
+  "无状态与状态外置": "Stateless Processes",
+  "数据生命周期": "Data Lifecycle",
+  "流处理与批处理": "Streams & Batches",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -311,6 +338,159 @@ export const enNotes: Record<string, NoteEn> = {
     ],
     pitfall: "Designing compensation only for the happy path — the first failure triggers a compensation chain that crashes itself.",
   },
+  "D3|数据建模": {
+    def: "Settle entities, relationships and constraints before performance — the model is a shared language between business and engineering.",
+    why: "Data outlives processes (nature N3): a modeling error is the most expensive bug class to fix.",
+    points: [
+      "Start from normal forms; denormalize only with measurements, not hunches.",
+      "Foreign keys and constraints are documentation and defense at once — don't leave them in the ER diagram only.",
+      "Naming is documentation: table and column names should read like business meaning.",
+      "Primary key choice is a trade-off: auto-increment writes fast but leaks volume, UUIDs are irregular but bloat index writes — pick per case, stay consistent across the database.",
+    ],
+    pitfall: "Designing tables straight from page fields — one requirement change forces a full table rebuild.",
+  },
+  "D3|金额与精度": {
+    def: "Store money as integer minor units (cents) or fixed-point types; define arithmetic and rounding rules explicitly.",
+    why: "Floats computing money always err (D3 invariant): 0.1 + 0.2 ≠ 0.3, and the drift grows into real losses in reports and reconciliation.",
+    points: [
+      "Store integer cents or DECIMAL; float/double are banned from money columns.",
+      "Rounding rules belong in the contract: half-up or banker's rounding, and who eats the remainder.",
+      "Cross-currency: fix the booking currency and snapshot the exchange rate — the deal-time rate is persisted with the order.",
+    ],
+    pitfall: "A float price column: stack two promotions and reconciliation is off by one cent every day — the root cause turns out to be precision.",
+  },
+  "D3|时间与时区": {
+    def: "Store time in UTC, transmit ISO 8601 with offset, and localize only at the presentation layer.",
+    why: "Servers, databases and browsers are three systems each carrying their own zone (N3 across systems); timezone bugs erupt only with cross-region users and DST switches.",
+    points: [
+      "Database stores UTC (or timezone-aware timestamptz); the application computes in UTC throughout.",
+      "APIs transmit ISO 8601 with offset; model business dates separately from physical instants (billing period vs timestamp).",
+      "Zone-less dates like birthdays and billing periods use DATE and never join timezone conversion.",
+    ],
+    pitfall: "Local time end to end — the DST day has 23 hours and every daily-settlement job goes wrong.",
+  },
+  "D3|迁移版本化": {
+    def: "Schema changes go through versioned scripts: in the repo, reviewable, rollbackable, replayable.",
+    why: "Schema is a production asset; hand-run DDL is a release without a version.",
+    points: [
+      "Migration scripts live in the same repo and review flow as code.",
+      "Destructive changes must split into multiple steps (see expand-contract).",
+      "Every migration replays in the same order across all environments.",
+    ],
+    pitfall: "Hand-editing the schema before launch — environments drift, and the problem only shows up in production.",
+  },
+  "D3|expand-contract": {
+    def: "Zero-downtime change in three steps: expand (add new structure) → migrate (dual-write and backfill) → contract (drop the old), each shipped separately.",
+    why: "Old and new code versions must both run on the same schema (D3 invariant).",
+    points: [
+      "Expand and contract are two separate releases with a full migration window between them.",
+      "Backfill runs in batches to avoid long lock-holding transactions.",
+      "Contract's precondition: every reader has upgraded to the new structure.",
+    ],
+    pitfall: "One ALTER that adds and drops columns at once — the old version crashes on the spot.",
+  },
+  "D3|缓存一致性": {
+    def: "Cache and database are two systems: the inconsistency window can only be shortened or tolerated, never eliminated.",
+    why: "Dual writes have no atomicity — database-first or cache-first, an intermediate state always exists (D3 invariant).",
+    points: [
+      "Default order: write the database, then invalidate the cache (Cache-Aside).",
+      "TTL is the hard ceiling on the inconsistency window — always set one.",
+      "For read-your-own-writes, read the database directly for a short window after writes.",
+      "Know the three classics cold: penetration (missing keys → cache nulls / bloom filter), breakdown (hot key expiry → single-flight mutex / logical expiry), avalanche (mass expiry → jittered TTL / HA cluster).",
+    ],
+    pitfall: "Chasing strongly consistent caches until you've built a distributed transaction — the cost swamps the benefit.",
+  },
+  "D3|软删除": {
+    def: "Mark rows with deleted_at instead of physically deleting — data stays recoverable and auditable.",
+    why: "Data is both asset and audit evidence (nature N3); deletion usually just means hidden from users.",
+    points: [
+      "Filter deleted rows in one query layer, not by remembering the condition in every query.",
+      "Unique constraints conflict with soft deletion: use partial indexes (WHERE deleted_at IS NULL).",
+      "When compliance demands physical deletion, anonymize instead.",
+    ],
+    pitfall: "Unique index ignoring soft-deleted rows — after deleting one record, creating the same name fails a second time.",
+  },
+  "D3|审计字段": {
+    def: "Standardized metadata columns on every table: created_at / updated_at / created_by / version.",
+    why: "Debugging, auditing and optimistic locking all depend on them — the data's factory information.",
+    points: [
+      "Injected by the framework; hand-assignment is forbidden.",
+      "Timestamps come from the database clock, never the application server's.",
+      "The version column directly powers optimistic locking.",
+    ],
+    pitfall: "Filling timestamps from application servers — machines drift a few seconds apart and the ordering falls apart.",
+  },
+  "D3|索引与查询计划": {
+    def: "Steer queries down the right path with structures like B-trees: index design plus reading plans with EXPLAIN.",
+    why: "Once volume grows, 80% of performance trouble is queries missing or losing indexes — the database's first performance lever.",
+    points: [
+      "Design composite indexes around query patterns, honoring the leftmost-prefix rule.",
+      "Indexes cost write amplification: more isn't better; prune redundant ones.",
+      "Slow-query log plus EXPLAIN is a daily habit: read the plan before talking optimization.",
+      "Watch for N+1: ORM lazy loading querying per loop iteration — turn on SQL logging and repeats jump out.",
+    ],
+    pitfall: "Applying functions or implicit type casts to indexed columns — the index dies on the spot, full table scan.",
+  },
+  "D3|复制与分片": {
+    def: "Replication = multiple copies (primary-replica, read/write split) for availability; sharding = splitting data by key for capacity.",
+    why: "A single machine's capacity and throughput both cap out (N3 at scale); replicate first, shard second — don't reverse the order.",
+    points: [
+      "With read/write splitting, decide up front where read-your-own-writes lands.",
+      "Choose the shard key by query pattern: a wrong choice can't be rebalanced.",
+      "Consistent hashing reduces data movement when scaling out.",
+    ],
+    pitfall: "Reaching for sharding as soon as data grows — most problems yield to indexes and archiving first; sharding is the last resort.",
+  },
+  "D3|事件发件箱（outbox）": {
+    def: "While writing business data, write pending events into an outbox table in the same database; a separate process delivers them — turning dual writes into one local transaction.",
+    why: "Commit the database + publish the message has no atomicity: a lost message or an uncommitted one leaves state and events inconsistent.",
+    points: [
+      "The outbox record is written inside the same local transaction as the business change.",
+      "A dispatcher polls the table or tails the binlog (CDC) to publish.",
+      "Consumers still need idempotency — delivery is at-least-once.",
+    ],
+    pitfall: "Publish first, write later, compensate on failure — the compensation branches sprawl; a single transaction beats them all.",
+  },
+  "D3|备份与恢复": {
+    def: "Scheduled backups plus a rehearsed restore process, quantified by RPO / RTO: how much data you can lose, how fast you recover.",
+    why: "No consistency design survives the data center disappearing; backup is the data domain's final fallback (N3's extreme case).",
+    points: [
+      "Set explicit business targets for RPO (set by backup frequency) and RTO (set by the restore process).",
+      "Restores must be rehearsed regularly — a backup never restored doesn't count as a backup (D3 invariant).",
+      "Backups themselves need encryption and access control.",
+    ],
+    pitfall: "Backups run forever, restores never once — the day disaster hits, the backups turn out to be corrupt.",
+  },
+  "D3|无状态与状态外置": {
+    def: "Processes keep no business state — sessions and files live in databases, caches and object storage, so any process can be killed or replaced at any time.",
+    why: "The shared premise of horizontal scaling and rolling releases: instances are interchangeable, so traffic can land anywhere (N2/N5 in cluster form).",
+    points: [
+      "Externalize sessions (Redis or self-contained tokens); no cross-request state in local memory.",
+      "Files go to object storage with presigned direct uploads, never local disk.",
+      "Graceful shutdown can only drain because state lives outside the process.",
+    ],
+    pitfall: "Sessions in memory just temporarily — the second instance comes online and users randomly lose their login.",
+  },
+  "D3|数据生命周期": {
+    def: "Retention, archiving, cleanup and compliant deletion: how long each data class lives, where it goes cold, how it gets deleted on request.",
+    why: "Data that only grows pushes cost and risk up monotonically (D3 invariant); privacy laws make deletability a legal obligation.",
+    points: [
+      "Define retention per data class — hot → cold archive → delete — in the schema design, not in verbal agreements.",
+      "Cleanup is an automated job (Steady State), not a panic script after the incident.",
+      "The right to delete covers copies: personal data in logs, caches and backups is all in scope.",
+    ],
+    pitfall: "Deleting only from the primary database while logs and backups keep everything — it all counts in a compliance audit.",
+  },
+  "D3|流处理与批处理": {
+    def: "Batch processing works in scheduled chunks (ETL, reconciliation); stream processing works as events arrive (CDC, real-time features).",
+    why: "Data serves more than online requests (N3's other face): reports, reconciliation, search indexes and risk features all come from pipelines.",
+    points: [
+      "Pipelines must be idempotent and replayable: re-running a batch must not corrupt data.",
+      "The batch/stream boundary is the latency budget, not fashion.",
+      "Reconciliation jobs are the final consistency net — catching and fixing whatever slipped past upstream.",
+    ],
+    pitfall: "A non-replayable pipeline: one consumption failure forces a full backfill, and the backfill itself becomes the next incident.",
+  },
 };
 
 /* ---------- 不变量 / 域元信息 / 毕业闸检索题 ---------- */
@@ -328,6 +508,14 @@ export const enInvariants: Record<string, string[]> = {
     "There is no atomic commit across services: every distributed-transaction participant must be able to write its own compensation.",
     "Scheduled jobs re-enter and run concurrently by default: a background task without idempotency and mutual exclusion is a landmine in production.",
   ],
+  D3: [
+    "Schema changes decouple from code releases: old and new code versions must both run on the same schema.",
+    "Cache and database are two systems; the inconsistency window can only be shortened or tolerated, never eliminated.",
+    "A backup that has never been restored is not a backup.",
+    "Data that only goes in never coming out — the system will eventually be crushed by its own history.",
+    "Money is always integer or fixed-point: floats computing money lose cents.",
+    "Store time in UTC, transmit ISO 8601, localize only at the presentation layer.",
+  ],
 };
 
 export const enDomainMeta: Record<string, { name: string; problem: string; cross?: string }> = {
@@ -339,6 +527,10 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D2: {
     name: "Concurrency & Consistency",
     problem: "When many requests read and write the same state simultaneously, how do you stay correct?",
+  },
+  D3: {
+    name: "Data & State",
+    problem: "Make data outlive processes — and let it evolve safely.",
   },
 };
 
@@ -370,5 +562,15 @@ export const enChecks: Record<
     ],
     explanation:
       "Duplicate execution from retries lands on the semantics of write — idempotency is D2's invariant; backoff and jitter are D4's countermeasures.",
+  },
+  check5: {
+    question: "Half the new code is deployed and now you need to drop a database column. What is the correct order?",
+    options: [
+      { label: "Drop first; errors from old code will trigger an automatic rollback", correct: false },
+      { label: "Put the release and the drop in one deploy ticket and finish atomically", correct: false },
+      { label: "Expand-contract: old and new code coexist on one schema first; drop only after the full switchover", correct: true },
+    ],
+    explanation:
+      "Schema changes must decouple from code releases — old and new code running on the same schema is D3's first invariant.",
   },
 };
