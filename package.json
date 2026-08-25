@@ -18,5 +18,25 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "typescript": "^5"
+  },
+  "keywords": [
+    "backend",
+    "roadmap",
+    "knowledge-graph",
+    "learning",
+    "governance",
+    "architecture",
+    "nextjs"
+  ],
+  "homepage": "https://decent9967.github.io/all-backend-you-need/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Decent9967/all-backend-you-need.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Decent9967/all-backend-you-need/issues"
+  },
+  "engines": {
+    "node": ">=18.18"
   }
 }

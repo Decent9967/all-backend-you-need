@@ -1,7 +1,18 @@
 # ALL BACKEND YOU NEED · 后端工程治理知识框架（KB-01）
 
+[![License](https://img.shields.io/github/license/Decent9967/all-backend-you-need)](./LICENSE)
+[![CI](https://github.com/Decent9967/all-backend-you-need/actions/workflows/ci.yml/badge.svg)](https://github.com/Decent9967/all-backend-you-need/actions/workflows/ci.yml)
+[![Deploy](https://github.com/Decent9967/all-backend-you-need/actions/workflows/deploy-pages.yml/badge.svg)](https://decent9967.github.io/all-backend-you-need/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](./CONTRIBUTING.md)
+
+**[在线打开 →](https://decent9967.github.io/all-backend-you-need/)** ｜ 简体中文 ｜ [English](./README.en.md)
+
 一个复刻 roadmap.sh 视觉与**知识组织方式**的交互式学习路线图（Next.js 单页应用）：
 **三线结构长画布（中轴主线 + 两侧子线）+ 点击节点开详情抽屉 + 可勾选的学习进度**。
+
+![画布总览](docs/images/preview-canvas.png)
+
+![节点笔记抽屉](docs/images/preview-drawer.png)
 
 ## 组织原则（对照 roadmap.sh 实测归纳，2026-08）
 
@@ -106,6 +117,8 @@ microservices.io / RFC / 12-Factor 中文版 / PoEAA / NIST / K8s / 官方文档
 [MIT](./LICENSE)
 
 ## 运行
+
+**[在线体验（GitHub Pages，无需安装）→](https://decent9967.github.io/all-backend-you-need/)**
 
 ```bash
 npm install
