@@ -1328,7 +1328,7 @@ button:focus-visible,
 /* ---------- 判断标准视图 ---------- */
 
 .calibration {
-  margin-top: 48px;
+  margin-top: 14px;
 }
 
 .calibration-title {
@@ -1716,6 +1716,32 @@ button.ft-row:hover .ft-label {
 
 .bdot-now {
   background: var(--accent);
+}
+
+.build-hint {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--hand);
+  font-size: 12.5px;
+  color: var(--accent);
+  white-space: nowrap;
+  animation: build-hint-nudge 2.2s ease infinite;
+}
+
+@keyframes build-hint-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .build-hint {
+    animation: none;
+  }
 }
 
 /* ---------- 图表容器（沿用） ---------- */
@@ -2235,6 +2261,21 @@ button.ft-row:hover .ft-label {
   background: #fff;
 }
 
+.lg-done {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  border: 1.6px solid var(--rm-green);
+  background: #fff;
+  color: var(--rm-green);
+  font: 700 10px/12px var(--hand);
+  text-align: center;
+}
+
+.lg-done::before {
+  content: "✓";
+}
+
 /* 顶栏进度 */
 
 .topbar-title {
@@ -2500,7 +2541,8 @@ button.ft-row:hover .ft-label {
 
 .drawer {
   position: fixed;
-  top: 0;
+  /* 避开 sticky 顶栏（窄屏折行后高度由 --tb-h 动态写入），否则头部和 ✕ 会被盖住 */
+  top: var(--tb-h, 57px);
   right: 0;
   bottom: 0;
   z-index: 41;
