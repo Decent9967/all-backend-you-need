@@ -137,6 +137,21 @@ export const enTitle: Record<string, string> = {
   "优雅停机与健康检查": "Graceful Shutdown & Health Checks",
   "容量规划与压测": "Capacity & Load Testing",
   "故障演练（混沌工程）": "Chaos Engineering",
+
+  /* D5 子主题行与概念节点 */
+  "三支柱，不可互替": "Three pillars, not interchangeable",
+  "工程化": "Operationalizing it",
+  "从指标到目标": "From metrics to objectives",
+  "闭环：从故障学习": "Closing the loop: learning from failures",
+  "看到系统边界": "Seeing the system's edge",
+  "结构化日志": "Structured Logs",
+  "traceId · spanId（OpenTelemetry）": "Tracing (OpenTelemetry)",
+  "RED 指标": "RED Metrics",
+  "采样": "Sampling",
+  "告警分级": "Alert Tiers",
+  "前端异常上报": "Frontend Error Reporting",
+  "SLO 与错误预算": "SLOs & Error Budgets",
+  "故障复盘": "Postmortems",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -633,6 +648,86 @@ export const enNotes: Record<string, NoteEn> = {
     ],
     pitfall: "Performing drills only in low-traffic windows, never rehearsing the real cascading-failure scenarios.",
   },
+  "D5|结构化日志": {
+    def: "Logs are data with fields (JSON), not concatenated strings for humans to read.",
+    why: "Debugging needs filtering, aggregation and statistics by field; regex-parsing string logs is unmaintainable.",
+    points: [
+      "Strict level semantics: ERROR = a human must look; WARN = auto-recovered but worth tracking.",
+      "One log line, one event; exception stacks go in a dedicated field.",
+      "Sensitive fields (phone numbers/tokens) are masked at the serialization boundary.",
+    ],
+    pitfall: "Concatenating stack traces into the message — no dedup, no aggregation, alert noise explodes.",
+  },
+  "D5|traceId · spanId（OpenTelemetry）": {
+    def: "One traceId per request, one spanId per hop, propagated across services by the standard (W3C Trace Context).",
+    why: "Without a traceId threading through the logs, debugging runs on luck (D5 invariant).",
+    points: [
+      "Traces start at the frontend/gateway and run all the way to the database (D5 invariant).",
+      "Propagate context explicitly across thread pools and async tasks, or the trace breaks.",
+      "Use OpenTelemetry semantic conventions; don't invent field names.",
+    ],
+    pitfall: "Context lost in an async thread pool — the trace breaks exactly at the message-consumer hop.",
+  },
+  "D5|RED 指标": {
+    def: "Three metrics per endpoint: request Rate, Errors, and Duration distribution.",
+    why: "Metrics answer where it broke; without per-endpoint RED, fault localization starts with guessing.",
+    points: [
+      "Label by endpoint/route with controlled label cardinality.",
+      "Use histograms (p50/p95/p99) for latency, never averages.",
+      "SLOs are defined on RED, not on resource utilization.",
+    ],
+    pitfall: "Watching only the global average latency — the long tail of users gets averaged away.",
+  },
+  "D5|采样": {
+    def: "Keep only a fraction of traces/logs, spending the collection budget on high-value signals.",
+    why: "Full capture is unaffordable and unnecessary; the sampling policy decides what you can see.",
+    points: [
+      "Sample errors and slow requests at 100%; tail-sample normal traffic.",
+      "Head sampling (decided at entry) vs tail sampling (decided after the full trace) each carry trade-offs.",
+      "Sampling decisions must be consistent end to end, or traces won't reassemble.",
+    ],
+    pitfall: "Each service sampling randomly on its own — the aggregator can't rebuild a single complete trace.",
+  },
+  "D5|告警分级": {
+    def: "Tier alerts by actionability: page now, ticket during business hours, dashboard for awareness only.",
+    why: "Alert fatigue gets real alarms ignored — tiering exists to protect the on-call engineer's attention.",
+    points: [
+      "Every alert must state what to do when it fires; if you can't write it, delete the alert.",
+      "Alert on symptoms (SLO burn rate), not causes (high CPU).",
+      "Alerts carry a runbook link.",
+    ],
+    pitfall: "Paging on CPU > 80% — two weeks later the on-call is immune to every alert.",
+  },
+  "D5|前端异常上报": {
+    def: "Frontend errors, API failures and performance metrics reported back with a traceId for correlation.",
+    why: "Users see more breakage than you think; observing the system's boundary starts at the outermost layer.",
+    points: [
+      "Report over an independent channel — the main API being down must not kill error reporting too.",
+      "Sample, dedupe and aggregate to survive reporting floods.",
+      "Carry the traceId so frontend errors join the backend trace.",
+    ],
+    pitfall: "Frontend errors without a traceId — you know that something broke, never which hop.",
+  },
+  "D5|SLO 与错误预算": {
+    def: "Define service quality targets with SLIs (success rate, latency percentiles); the allowance for falling short is the error budget.",
+    why: "Metrics answer how much; SLOs answer whether that's enough — without a target you can't tell noise from incident (D5's decision layer).",
+    points: [
+      "Choose SLIs from the user's perspective (success rate, p95 latency), not resource utilization.",
+      "Budget burned → freeze releases, focus on reliability until it recovers.",
+      "Never set the target at 100%: a zero budget makes every release a violation.",
+    ],
+    pitfall: "SLOs defined and never consulted — they must hook into the release process and alerting, or they're numbers on a wall.",
+  },
+  "D5|故障复盘": {
+    def: "Structured review after incidents: timeline, root cause, action items — pursue the system, not the person (blameless postmortem).",
+    why: "Incidents without postmortems repeat (D5 invariant); the material observability collects only becomes organizational memory through review.",
+    points: [
+      "Blameless: analyze why the system allowed the incident, not who typed the wrong change.",
+      "Action items need owners and deadlines, tracked to closure — otherwise the next review repeats the agenda.",
+      "Root causes stated as which invariant was violated prevent recurrence far better than whose fault it was.",
+    ],
+    pitfall: "Running the review as a blame session — soon nobody reports incidents early; everyone learns to cover first.",
+  },
 };
 
 /* ---------- 不变量 / 域元信息 / 毕业闸检索题 ---------- */
@@ -665,6 +760,12 @@ export const enInvariants: Record<string, string[]> = {
     "Under overload, proactively rejecting some requests is protection; letting every request time out together is the incident.",
     "Resilience that has never been rehearsed is just decoration in a config file.",
   ],
+  D5: [
+    "Logs without a traceId threading through them make debugging a matter of luck.",
+    "Metrics tell you where, logs tell you why, traces tell you which hop — none can substitute for another.",
+    "The traceId should be generated at the frontend and carried through gateway, services, and database.",
+    "Incidents without postmortems repeat; postmortems pursue the system, not the person.",
+  ],
 };
 
 export const enDomainMeta: Record<string, { name: string; problem: string; cross?: string }> = {
@@ -684,6 +785,10 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D4: {
     name: "Distributed Resilience",
     problem: "Design as if dependencies will definitely fail — treat it as the norm, not the exception.",
+  },
+  D5: {
+    name: "Observability",
+    problem: "When the system breaks, answer within minutes: what broke, why, and which hop of the chain.",
   },
 };
 
@@ -736,5 +841,16 @@ export const enChecks: Record<
     ],
     explanation:
       "Independent per-layer retries exponentially amplify downstream traffic; retries must obey an end-to-end budget — timeouts allocate backwards from the total, a D4 invariant.",
+  },
+  check7: {
+    question:
+      "Users report occasional slow checkouts, and all you have is per-machine sharded logs. What should you add first?",
+    options: [
+      { label: "A traceId generated at the frontend, carried through gateway, services and database", correct: true },
+      { label: "Turn every log level up to DEBUG", correct: false },
+      { label: "Add machines to spread the log load", correct: false },
+    ],
+    explanation:
+      "Without a traceId threading through, debugging runs on luck; metrics say where, logs say why, traces say which hop — none interchangeable, a D5 invariant.",
   },
 };
