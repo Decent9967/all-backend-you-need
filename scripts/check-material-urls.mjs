@@ -1,12 +1,20 @@
-/* 维护脚本：探测 data/notes.ts 里全部「深入材料」链接是否仍可访问。
+/* 维护脚本：探测 data/notes.ts（笔记深入材料）与 data/framework.ts（域书单）
+   里全部外链是否仍可访问。
    用法：node scripts/check-material-urls.mjs（CI 或加链接后自查用） */
 import { readFileSync } from "node:fs";
 
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
 
-const src = readFileSync(new URL("../data/notes.ts", import.meta.url), "utf8");
-const urls = [...new Set([...src.matchAll(/, url: "(https?:[^"]+)"/g)].map((m) => m[1]))];
+const files = ["../data/notes.ts", "../data/framework.ts"];
+const urls = [
+  ...new Set(
+    files.flatMap((f) => {
+      const src = readFileSync(new URL(f, import.meta.url), "utf8");
+      return [...src.matchAll(/url: "(https?:[^"]+)"/g)].map((m) => m[1]);
+    }),
+  ),
+];
 
 async function check(url) {
   const hit = async (ua) => {

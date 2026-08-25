@@ -213,14 +213,76 @@ export const learningSteps = [
   },
 ];
 
-export const readingList: { domain: string; name: string; materials: string[] }[] = [
-  { domain: "D1", name: "契约与 API", materials: ["RFC 9457 Problem Details", "Google API Design Guide"] },
-  { domain: "D2", name: "并发与一致性", materials: ["《DDIA》第 7 章 · 事务", "你所用的数据库的隔离级别文档"] },
-  { domain: "D3", name: "数据与状态", materials: ["《DDIA》", "expand-contract 零停机迁移模式"] },
-  { domain: "D4", name: "分布式弹性", materials: ["《Release It!》", "Google SRE Book"] },
-  { domain: "D5", name: "可观测性", materials: ["Google SRE Book · 监控章节", "OpenTelemetry 文档"] },
-  { domain: "D6", name: "安全", materials: ["OWASP Top 10", "OWASP ASVS"] },
-  { domain: "D7", name: "工程治理", materials: ["12-Factor App", "adr.github.io"] },
+export const readingList: {
+  domain: string;
+  name: string;
+  materials: { title: string; url?: string }[];
+}[] = [
+  {
+    domain: "D1",
+    name: "契约与 API",
+    materials: [
+      { title: "RFC 9457 Problem Details", url: "https://www.rfc-editor.org/rfc/rfc9457" },
+      { title: "Google API Design Guide", url: "https://docs.cloud.google.com/apis/design" },
+    ],
+  },
+  {
+    domain: "D2",
+    name: "并发与一致性",
+    materials: [
+      { title: "《DDIA》· Designing Data-Intensive Applications", url: "https://dataintensive.net/" },
+      {
+        title: "你所用的数据库的隔离级别文档（以 PostgreSQL 为例）",
+        url: "https://www.postgresql.org/docs/current/transaction-iso.html",
+      },
+    ],
+  },
+  {
+    domain: "D3",
+    name: "数据与状态",
+    materials: [
+      { title: "《DDIA》· Designing Data-Intensive Applications", url: "https://dataintensive.net/" },
+      {
+        title: "martinfowler.com · Parallel Change（expand/contract）",
+        url: "https://martinfowler.com/bliki/ParallelChange.html",
+      },
+    ],
+  },
+  {
+    domain: "D4",
+    name: "分布式弹性",
+    materials: [
+      { title: "《Release It!》2nd Edition（Pragmatic）", url: "https://pragprog.com/titles/mnee2/release-it-second-edition/" },
+      { title: "Google SRE Book", url: "https://sre.google/sre-book/table-of-contents/" },
+    ],
+  },
+  {
+    domain: "D5",
+    name: "可观测性",
+    materials: [
+      {
+        title: "Google SRE Book · Monitoring Distributed Systems",
+        url: "https://sre.google/sre-book/monitoring-distributed-systems/",
+      },
+      { title: "OpenTelemetry 官方文档", url: "https://opentelemetry.io/docs/" },
+    ],
+  },
+  {
+    domain: "D6",
+    name: "安全",
+    materials: [
+      { title: "OWASP Top 10", url: "https://owasp.org/www-project-top-ten/" },
+      { title: "OWASP ASVS", url: "https://owasp.org/www-project-application-security-verification-standard/" },
+    ],
+  },
+  {
+    domain: "D7",
+    name: "工程治理",
+    materials: [
+      { title: "The Twelve-Factor App", url: "https://12factor.net/" },
+      { title: "adr.github.io · 架构决策记录", url: "https://adr.github.io/" },
+    ],
+  },
 ];
 
 export const calibration = [

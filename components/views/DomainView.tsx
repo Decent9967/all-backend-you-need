@@ -98,9 +98,19 @@ export default function DomainView({
         <footer className="domain-cross-note">
           <span className="mini-label">本域书单 · 先读这几份建骨架</span>
           <ul className="read-list">
-            {reading.materials.map((m) => (
-              <li key={m}>{m}</li>
-            ))}
+            {reading.materials.map((m) =>
+              m.url ? (
+                <li key={m.title}>
+                  <a className="note-material" href={m.url} target="_blank" rel="noopener noreferrer">
+                    {m.title} ↗
+                  </a>
+                </li>
+              ) : (
+                <li key={m.title}>
+                  <span className="note-material plain">{m.title}</span>
+                </li>
+              ),
+            )}
           </ul>
         </footer>
       ) : null}

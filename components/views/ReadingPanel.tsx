@@ -17,9 +17,19 @@ export default function ReadingPanel({ domainId }: { domainId?: string }) {
           <section className="domain-block">
             <h3 className="mini-label">经典材料 · 先读这几份建骨架</h3>
             <ul className="read-list">
-              {r.materials.map((m) => (
-                <li key={m}>{m}</li>
-              ))}
+              {r.materials.map((m) =>
+                m.url ? (
+                  <li key={m.title}>
+                    <a className="note-material" href={m.url} target="_blank" rel="noopener noreferrer">
+                      {m.title} ↗
+                    </a>
+                  </li>
+                ) : (
+                  <li key={m.title}>
+                    <span className="note-material plain">{m.title}</span>
+                  </li>
+                ),
+              )}
             </ul>
           </section>
         </section>
