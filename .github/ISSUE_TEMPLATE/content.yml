@@ -1,0 +1,34 @@
+name: Content / 内容
+description: Factual errors, broken links, concept proposals — 事实纠错、链接失效、新概念提案
+labels: ["content"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type / 类型
+      options:
+        - Factual error / 事实错误
+        - Broken or better link / 链接失效或更好的来源
+        - New concept proposal / 新概念提案
+        - Translation (EN content) / 英文内容翻译
+        - Other / 其他
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Which node or domain / 哪个节点或域
+      description: e.g. D4 / 熔断, or the note URL. 如 D4 熔断，或笔记链接。
+      placeholder: "D4 / 熔断"
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Details / 说明
+      description: >
+        For factual claims, include a primary source (spec, official docs,
+        original author). 事实纠错请附一手出处（规范/官方文档/原作者）；
+        新概念请说明属于哪个域、对应哪条不变量。
+    validations:
+      required: true

@@ -1,52 +1,69 @@
-# 贡献指南
+# Contributing
 
-欢迎纠错（事实/链接失效/错别字）、补概念、补一手材料。
+Thanks for helping improve this knowledge map! Bug fixes (facts, broken
+links, typos), new concepts and better primary sources are all welcome.
 
-## 本地开发
+**中文摘要在文末 / Chinese summary at the bottom.**
+
+## Getting started
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
 ```
 
-## 提 PR 前请跑审计
+## Run the audits before opening a PR
 
 ```bash
-npm run build                        # 含类型检查，必须通过
-node scripts/verify-related.mjs      # 相关概念引用零悬空
-node scripts/content-audit.mjs       # 笔记完整度（def/坑点/材料齐全）
-node scripts/check-material-urls.mjs # 外链存活探测（走外网，本机手动跑）
+npm run build                        # includes type checking — must pass
+node scripts/verify-related.mjs      # related-concept references resolve
+node scripts/content-audit.mjs       # note completeness (def/pitfall/materials)
+node scripts/check-material-urls.mjs # link liveness (hits the network — run locally)
 ```
 
-CI（`.github/workflows/ci.yml`）会重跑前三项。
+CI re-runs the first three on every push and pull request.
 
-## 内容约定
+## Content conventions
 
-- **按域学，不按技术学**：新概念先回答「属于哪个域、违反哪条不变量」，
-  答不上来的主题去 `data/scope.ts` 范围登记表走流程，不散落在正文
-- **加概念三步**：`framework.ts` 加概念 → `roadmap.ts` 的 `DOMAIN_ROWS`
-  给它一行归属 → `notes.ts` 补笔记（画布布局自动重排）
-- **不变量句式**：换任何语言都成立的断言，不出现具体工具名
-- **外链**：只挂一手来源（规范原文/官方文档/原作者文章），写入前先探测 200；
-  无公开电子版的书留纯文本
-- **引用他人材料只给链接不复制正文**
+- **Learn by domain, not by technology.** Every new concept must answer
+  "which domain does it belong to, which invariant does it violate?" If it
+  can't, propose it in the scope registry (`data/scope.ts`) instead.
+- **Adding a concept takes three steps:** add it in `framework.ts` → give it
+  a row in `DOMAIN_ROWS` (`data/roadmap.ts`) → write its note in
+  `data/notes.ts`. The canvas layout re-flows automatically.
+- **Invariants** are assertions that hold in any language — no tool names.
+- **External links:** primary sources only (specs, official docs, original
+  authors); probe for HTTP 200 before committing. Books without a public
+  digital edition stay as plain text. Link to others' material — never copy it.
+- **Out-of-scope topics** go to the scope registry with a revisit condition,
+  not into the main content.
 
-## PR 期望
+## Pull requests
 
-- build 通过、审计全绿
-- commit 信息用中文，说清改了什么、为什么改
-- 内容改动请在 PR 描述里给出出处链接
+- Build passes and audits are green
+- Commit messages in Chinese are fine — just say what changed and why
+- For content changes, include source links in the PR description
 
-## 版本与发布
+## Releases
 
-- 版本号语义：`vMAJOR.MINOR.PATCH`——内容结构/交互大改升 MAJOR，
-  新增概念/域内容升 MINOR，修错（链接/文案/样式）升 PATCH
-- 发布流程：改 `package.json` 的 `version` → 提交 → 打 tag → 建 Release：
+Versioning: `vMAJOR.MINOR.PATCH` — MAJOR for structural or interaction
+redesigns, MINOR for new concepts or domains, PATCH for fixes.
 
 ```bash
+# bump package.json version, commit, then:
 git tag vX.Y.Z
 git push origin main --tags
-gh release create vX.Y.Z --title "vX.Y.Z · 简短说明" --notes-file release-notes.md
+gh release create vX.Y.Z --title "vX.Y.Z — short summary" --notes-file notes.md
 ```
 
-- 每次推 main：CI 自动审计，GitHub Pages 自动重新部署，无需手动操作
+Every push to `main` runs CI and redeploys the live site automatically.
+
+## 中文摘要
+
+- PR 前跑：`npm run build` + `verify-related` + `content-audit`；
+  外链探测 `check-material-urls` 走外网，本机手动跑
+- 内容约定：按域学不按技术学；加概念三步
+  （`framework.ts` → `DOMAIN_ROWS` → `notes.ts`）；不变量不写工具名；
+  外链只挂一手来源且先探测 200；范围外主题进 `data/scope.ts`
+- 版本语义：结构大改 MAJOR / 加概念 MINOR / 修错 PATCH；
+  推 main 自动 CI + 重新部署

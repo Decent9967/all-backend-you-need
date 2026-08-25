@@ -8,7 +8,7 @@
 
 **[在线打开 →](https://decent9967.github.io/all-backend-you-need/)** ｜ 简体中文 ｜ [English](./README.md)
 
-一个复刻 roadmap.sh 视觉与**知识组织方式**的交互式学习路线图（Next.js 单页应用）：
+一个以 roadmap.sh 为蓝本的交互式学习路线图（Next.js 单页应用）：
 **三线结构长画布（中轴主线 + 两侧子线）+ 点击节点开详情抽屉 + 可勾选的学习进度**。
 
 ![画布总览](docs/images/preview-canvas.png)

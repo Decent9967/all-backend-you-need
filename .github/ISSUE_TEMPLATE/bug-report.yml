@@ -1,0 +1,35 @@
+name: Bug report / 问题报告
+description: Something renders or behaves incorrectly — 交互、渲染或链接出了问题
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened / 发生了什么
+      description: What you expected vs. what you got. 期望与实际表现的差异。
+      placeholder: e.g. Clicking the D3 gate opens the D2 note / 点击 D3 毕业闸打开了 D2 的笔记
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where / 位置
+      description: Node, page or URL. 节点名或链接（如 https://…/#/d2-c0）。
+      placeholder: "#/d2-c0 或页面位置"
+    validations:
+      required: true
+  - type: dropdown
+    id: env
+    attributes:
+      label: Environment / 环境
+      options:
+        - Desktop browser / 桌面浏览器
+        - Mobile browser / 移动端浏览器
+        - Other / 其他
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context / 补充信息
+      description: Screenshots, console errors. 截图、console 报错等。

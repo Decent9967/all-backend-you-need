@@ -1,4 +1,4 @@
-# ALL BACKEND YOU NEED · A Backend Governance Knowledge Framework
+# ALL BACKEND YOU NEED — A Backend Governance Knowledge Framework
 
 [![License](https://img.shields.io/github/license/Decent9967/all-backend-you-need)](./LICENSE)
 [![CI](https://github.com/Decent9967/all-backend-you-need/actions/workflows/ci.yml/badge.svg)](https://github.com/Decent9967/all-backend-you-need/actions/workflows/ci.yml)
@@ -9,7 +9,7 @@ English | [简体中文（完整版）](./README.zh-CN.md)
 
 **[Open online →](https://decent9967.github.io/all-backend-you-need/)**
 
-An interactive learning roadmap (single-page Next.js app) that replicates the
+An interactive learning roadmap (single-page Next.js app) inspired by the
 visual language and knowledge organization of [roadmap.sh](https://roadmap.sh):
 a hand-drawn canvas with a central milestone spine, sub-topic groups on both
 sides, and a graduation gate at the end of every domain.
@@ -53,7 +53,7 @@ any framework.
 
 ## Language
 
-UI chrome (top bar, drawer, legend, hints) supports 中文 / English via the
+UI chrome (top bar, drawer, legend, hints) supports Chinese and English via the
 toggle in the top bar. Knowledge content (notes, invariants, quizzes) is
 currently authored in Chinese; the data model is ready for incremental
 translation. PRs welcome.
