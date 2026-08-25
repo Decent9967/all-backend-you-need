@@ -152,6 +152,27 @@ export const enTitle: Record<string, string> = {
   "前端异常上报": "Frontend Error Reporting",
   "SLO 与错误预算": "SLOs & Error Budgets",
   "故障复盘": "Postmortems",
+
+  /* D6 子主题行与概念节点 */
+  "先分清两件事": "Two different things first",
+  "授权怎么做": "How to authorize",
+  "凭证与会话": "Credentials & sessions",
+  "技术攻击面": "The technical attack surface",
+  "业务逻辑的攻击面": "The business-logic attack surface",
+  "加密边界": "The encryption boundary",
+  "资产与痕迹": "Assets & traces",
+  "认证 vs 授权": "AuthN vs AuthZ",
+  "RBAC · ABAC": "RBAC & ABAC",
+  "注入类漏洞族": "The Injection Family",
+  "对象级越权（IDOR）": "IDOR",
+  "最小权限": "Least Privilege",
+  "密钥管理": "Secrets Management",
+  "脱敏": "Data Masking",
+  "审计日志": "Audit Logs",
+  "密码与凭证存储": "Password Storage",
+  "会话与令牌管理": "Session & Token Management",
+  "传输与静态加密": "TLS & Encryption at Rest",
+  "业务逻辑与防滥用": "Business Logic & Abuse",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -728,6 +749,128 @@ export const enNotes: Record<string, NoteEn> = {
     ],
     pitfall: "Running the review as a blame session — soon nobody reports incidents early; everyone learns to cover first.",
   },
+  "D6|认证 vs 授权": {
+    def: "Authentication answers who you are; authorization answers what you may do to what.",
+    why: "Conflating the two turns logged-in-users-can-edit-others-data vulnerabilities into features.",
+    points: [
+      "AuthN outputs a principal; AuthZ takes principal + resource + action as input.",
+      "Authorization checks land on every object access, not just at the endpoint.",
+      "Implement and test the two layers separately.",
+    ],
+    pitfall: "Authenticating only at the gateway while the business layer assumes every incoming request may write.",
+  },
+  "D6|RBAC · ABAC": {
+    def: "RBAC grants permissions by role; ABAC decides dynamically by attribute rules (user/resource/environment).",
+    why: "The permission model decides authorization granularity and long-term maintainability — a wrong model means permanent patching.",
+    points: [
+      "Start with RBAC; introduce ABAC hybrid when rules explode.",
+      "Roles follow responsibilities, not the org chart.",
+      "Feature permission (what you can do) and data-scope permission (which rows: self / department) are two dimensions — don't cram them into one role model.",
+      "Permission changes are themselves audited.",
+    ],
+    pitfall: "One super-admin role absorbing every privilege — least privilege in name only.",
+  },
+  "D6|注入类漏洞族": {
+    def: "User input interpreted as part of code or queries: SQL injection, command injection, template injection, LDAP injection.",
+    why: "The most extreme consequence of all-input-is-untrusted (nature N1) — input literally becomes executable logic.",
+    points: [
+      "Parameterized queries / prepared statements are the wholesale fix, not filtering case by case.",
+      "Anywhere a concatenated string reaches an interpreter is an injection point.",
+      "Code review specifically watches for hand-concatenated native queries.",
+    ],
+    pitfall: "Assuming an ORM makes you immune — concatenated native queries inject just fine.",
+  },
+  "D6|对象级越权（IDOR）": {
+    def: "Users reach objects that aren't theirs by changing an id: someone else's order number in /orders/1042.",
+    why: "The authorization check landed on the endpoint instead of the object (D6 invariant) — endpoint auth is not ownership verification.",
+    points: [
+      "Verify ownership on every object access: WHERE id = ? AND user_id = ?.",
+      "Unguessable ids (UUIDs) only mitigate; they don't replace the check.",
+      "Authorization-bypass paths need automated test coverage.",
+    ],
+    pitfall: "The endpoint requires login, but enumerating order ids reads the whole site's data.",
+  },
+  "D6|最小权限": {
+    def: "Deny by default, grant on demand; prefer temporary elevation over permanently accumulated privilege.",
+    why: "The larger the permission surface, the bigger the blast radius of leaks and mistakes — it decides how bad things get when they go bad.",
+    points: [
+      "Service accounts too: the application shouldn't connect to the database as admin.",
+      "Three-way database account split: application (DML), migration (DDL), human (per-use approval).",
+      "Permissions have requests, expiries, and revocations.",
+      "Audit actual usage of privileged accounts regularly.",
+    ],
+    pitfall: "Granting DBA to the service account for convenience — it's just internal network anyway.",
+  },
+  "D6|密钥管理": {
+    def: "Full-lifecycle management of secrets: generation, storage, rotation, auditing.",
+    why: "A secret that has been in git once should be treated as leaked (D6 invariant) — leakage is irreversible.",
+    points: [
+      "Secrets live in KMS/secret managers, injected at runtime — never in code or config files.",
+      "Rotation is routine: every release can rotate; quarterly it must.",
+      "Install repo leak scanning that covers historical commits too.",
+    ],
+    pitfall: "Committing secrets in config and hiding behind the repo is private excuse.",
+  },
+  "D6|脱敏": {
+    def: "Mask or remove sensitive fields when logging, displaying or exporting (phone 138****5678).",
+    why: "Minimal exposure is the shared bottom line of security and compliance — the fewer eyes, the better.",
+    points: [
+      "Mask at the serialization boundary uniformly, not scattered hand-written spots.",
+      "Preserve usability: last four digits, hash lookup tables.",
+      "Classify the data first, then set masking rules.",
+    ],
+    pitfall: "Logging whole request bodies — passwords and tokens land in the log system in plaintext.",
+  },
+  "D6|审计日志": {
+    def: "Tamper-evident records of who, when, did what to which object — kept separate from business logs.",
+    why: "Accountability, compliance checks and forensics all depend on it (N5's time dimension).",
+    points: [
+      "Audit logs have independent storage and retention policies; application log rotation must not erase them.",
+      "Record before-and-after values, not just that something changed.",
+      "Make the audit-write-failure policy explicit: block the business or alert and proceed — decide deliberately.",
+    ],
+    pitfall: "Mixing audit logs with ordinary logs — one disk cleanup and the evidence is gone.",
+  },
+  "D6|密码与凭证存储": {
+    def: "Store passwords with salted slow hashes (bcrypt / argon2): irreversible, per-user salt.",
+    why: "Assume the database will be dumped one day — that moment, the slow hash is the user's last line of defense (D6 invariant).",
+    points: [
+      "bcrypt / argon2 with a cost factor: raise it as compute grows, migrate re-hashes transparently.",
+      "Uniform login-failure messages (no distinction between unknown user and wrong password).",
+      "Password-reset tokens are single-use, short-lived, sent through a separate channel.",
+    ],
+    pitfall: "MD5/SHA with salt for passwords — fast hashes are built for collisions; GPUs try a hundred million per second.",
+  },
+  "D6|会话与令牌管理": {
+    def: "The full lifecycle of sessions (server-side state) and tokens (self-contained JWT): issuance, renewal, logout, revocation.",
+    why: "Credential lifetime and revocation policy decide what a leak is worth — session management is the other half of authentication.",
+    points: [
+      "Stateless JWT means unrevokable: for sensitive flows use short-lived access tokens plus refresh rotation.",
+      "Logout/password change must invalidate old tokens (blocklist or per-user version number).",
+      "Regenerate the session identifier after login to prevent session fixation.",
+    ],
+    pitfall: "A seven-day non-revocable JWT — one leak means a week of free rein.",
+  },
+  "D6|传输与静态加密": {
+    def: "TLS everywhere in transit (including internal service-to-service) plus encryption at rest for sensitive fields and disks.",
+    why: "The internal network isn't trusted either (N1's intranet version) — design as if traffic will be tapped.",
+    points: [
+      "TLS covers inter-service traffic, not just the entry point.",
+      "Automated certificate rotation (ACME): an expired certificate means the whole site is down.",
+      "Encryption at rest guards pulled disks; field-level encryption/hashing guards dumped databases.",
+    ],
+    pitfall: "No encryption internally — one compromised instance becomes the whole intranet's tap.",
+  },
+  "D6|业务逻辑与防滥用": {
+    def: "Attacks don't always use technical exploits: farming coupons, bulk registration and abuse ride legal endpoints used illegally.",
+    why: "Scanners catch injection and broken access control; only designers can prevent business-logic flaws (OWASP ASVS V11 business logic).",
+    points: [
+      "Critical flows (registration / coupons / withdrawal) get abuse thresholds and graduated challenges.",
+      "Internal endpoints need authn and audit too — a compromised internal service shouldn't become a springboard.",
+      "Risk-control actions must be explainable and appealable; false kills hurt more than misses.",
+    ],
+    pitfall: "A marketing campaign launches without rate limits or budgets — one night, farmed to zero by scripts.",
+  },
 };
 
 /* ---------- 不变量 / 域元信息 / 毕业闸检索题 ---------- */
@@ -766,6 +909,11 @@ export const enInvariants: Record<string, string[]> = {
     "The traceId should be generated at the frontend and carried through gateway, services, and database.",
     "Incidents without postmortems repeat; postmortems pursue the system, not the person.",
   ],
+  D6: [
+    "A secret that has been in git once should be treated as leaked.",
+    "Authorization checks must land on every object access, not just on endpoints.",
+    "Passwords must be irreversible: when the database leaks, the slow hash is the user's last line of defense.",
+  ],
 };
 
 export const enDomainMeta: Record<string, { name: string; problem: string; cross?: string }> = {
@@ -789,6 +937,10 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D5: {
     name: "Observability",
     problem: "When the system breaks, answer within minutes: what broke, why, and which hop of the chain.",
+  },
+  D6: {
+    name: "Security",
+    problem: "Facing an untrusted network, real users and attackers — defend the data and the boundary.",
   },
 };
 
@@ -852,5 +1004,16 @@ export const enChecks: Record<
     ],
     explanation:
       "Without a traceId threading through, debugging runs on luck; metrics say where, logs say why, traces say which hop — none interchangeable, a D5 invariant.",
+  },
+  check3: {
+    question:
+      "A secret that has been in git once should be treated as leaked — which domain's invariant is this?",
+    options: [
+      { label: "D7 Engineering Governance: rules must be machine-checkable", correct: false },
+      { label: "D1 Contracts & APIs: errors are part of the contract", correct: false },
+      { label: "D6 Security: the irreversible-leak assumption of secrets management", correct: true },
+    ],
+    explanation:
+      "Secrets management belongs to D6 Security; machine-checkable rules are D7's invariant — don't mix the two.",
   },
 };
