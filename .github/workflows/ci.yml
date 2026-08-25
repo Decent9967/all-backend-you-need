@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: 构建与内容审计
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: 构建（含类型检查）
+        run: npm run build
+
+      - name: 相关概念引用审计
+        run: node scripts/verify-related.mjs
+
+      - name: 笔记完整度审计
+        run: node scripts/content-audit.mjs
