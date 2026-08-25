@@ -41,6 +41,17 @@ export default function NaturePanel({
         </ul>
       </section>
 
+      <section className="domain-block">
+        <h3 className="mini-label">画布位置</h3>
+        <ul className="chips chips-click">
+          <li>
+            <button type="button" onClick={() => onOpen("intro")}>
+              起点里程碑「后端是什么」→
+            </button>
+          </li>
+        </ul>
+      </section>
+
       <p className="figure-note">
         这条本性不接受妥协——由它推出的治理动作是必然推论，而不是行业惯例。
         换任何语言、任何框架，它都在那里。

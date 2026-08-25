@@ -28,6 +28,11 @@ export default function BuildBar({
           <span key={i} className={`bdot${i === stage ? " bdot-now" : ""}${i < stage ? " bdot-done" : ""}`} />
         ))}
       </span>
+      {onAdvance && stage < total ? (
+        <span className="build-hint" aria-hidden="true">
+          点击搭建下一幕 →
+        </span>
+      ) : null}
     </div>
   );
 }

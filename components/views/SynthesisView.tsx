@@ -11,6 +11,7 @@ export default function SynthesisView() {
       </p>
       <div className="synth-cols">
         <div className="calibration">
+          <h3 className="mini-label">典型三年经验 · 放回框架对照</h3>
           {calibration.map((row) => (
             <div key={row.to} className="cal-row">
               <div className="cal-items">

@@ -154,7 +154,10 @@ export default function Page() {
               <span className="lg-dots" /> 展开（两侧）
             </span>
             <span className="lg-item">
-              <span className="lg-badge" /> 角标＝已掌握
+              <span className="lg-badge" /> 角标＝可勾选
+            </span>
+            <span className="lg-item">
+              <span className="lg-done" /> 变绿＝已掌握
             </span>
           </div>
         </main>
