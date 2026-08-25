@@ -81,7 +81,7 @@ export default function NodeDrawer({
   onClose: () => void;
   onOpen: (id: string) => void;
 }) {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const idx = orderIds.indexOf(node.id);
   const prev = orderIds[idx - 1];
   const next = orderIds[idx + 1];
@@ -90,10 +90,10 @@ export default function NodeDrawer({
   return (
     <>
       <div className="drawer-veil" onClick={onClose} aria-hidden="true" />
-      <aside className="drawer" role="dialog" aria-modal="true" aria-label={node.title}>
+      <aside className="drawer" role="dialog" aria-modal="true" aria-label={tr(node.title)}>
         <header className="drawer-head">
           {headCode ? <span className="drawer-code">{headCode}</span> : null}
-          <span className="drawer-title">{node.title}</span>
+          <span className="drawer-title">{tr(node.title)}</span>
           <button type="button" className="drawer-close" onClick={onClose} aria-label={t.closeAria}>
             ✕
           </button>

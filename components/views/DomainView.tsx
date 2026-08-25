@@ -4,6 +4,7 @@ import { readingList } from "@/data/framework";
 import PillarsDiagram from "@/components/PillarsDiagram";
 import BuildBar from "@/components/BuildBar";
 import { useI18n } from "@/components/I18n";
+import { enDomainMeta, enInvariants } from "@/data/en";
 import { steps } from "@/data/sitemap";
 import D1ContractDiagram from "@/components/minis/D1ContractDiagram";
 import D2RaceDiagram from "@/components/minis/D2RaceDiagram";
@@ -30,7 +31,9 @@ export default function DomainView({
   stage: number;
   onAdvance: () => void;
 }) {
-  const { t } = useI18n();
+  const { lang, t, tr } = useI18n();
+  const meta = lang === "en" ? enDomainMeta[domain.id] : undefined;
+  const invariants = lang === "en" ? enInvariants[domain.id] ?? domain.invariants : domain.invariants;
   const Mini = MINIS[domain.id];
   const captions = steps.find((s) => s.id === domain.id.toLowerCase())?.stages;
   const reading = readingList.find((r) => r.domain === domain.id);
@@ -38,16 +41,16 @@ export default function DomainView({
     <div className="reveal domain-view">
       <header className="domain-view-head">
         <span className="domain-view-id">{domain.id}</span>
-        <h2 className="domain-view-name">{domain.name}</h2>
+        <h2 className="domain-view-name">{meta?.name ?? domain.name}</h2>
         <span className="domain-view-en">{domain.en}</span>
-        <span className="domain-view-src">源 {domain.sources.join(" · ")}</span>
+        <span className="domain-view-src">{lang === "en" ? domain.sources.map(tr).join(" · ") : `源 ${domain.sources.join(" · ")}`}</span>
       </header>
 
       <div className="domain-cols">
         <div className="domain-col-left">
           <section className="domain-block">
             <h3 className="mini-label">{t.dvProblem}</h3>
-            <p className="domain-thesis">{domain.problem}</p>
+            <p className="domain-thesis">{meta?.problem ?? domain.problem}</p>
           </section>
           <section className="domain-block">
             <h3 className="mini-label">{t.dvConcepts}</h3>
@@ -92,7 +95,7 @@ export default function DomainView({
       {domain.cross ? (
         <footer className="domain-cross-note">
           <span className="mini-label">{t.dvCross}</span>
-          <span>{domain.cross}</span>
+          <span>{meta?.cross ?? domain.cross}</span>
         </footer>
       ) : null}
 

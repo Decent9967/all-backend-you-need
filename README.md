@@ -53,10 +53,10 @@ any framework.
 
 ## Language
 
-UI chrome (top bar, drawer, legend, hints) supports Chinese and English via the
-toggle in the top bar. Knowledge content (notes, invariants, quizzes) is
-currently authored in Chinese; the data model is ready for incremental
-translation. PRs welcome.
+UI chrome (top bar, drawer, legend, hints) supports Chinese and English via
+the toggle in the top bar. Knowledge content is translated domain by domain
+(currently: the intro skeleton and D1); untranslated domains fall back to
+Chinese automatically. PRs welcome.
 
 ## Quick start
 

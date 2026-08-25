@@ -10,7 +10,7 @@ export default function NaturePanel({
   natureId: string;
   onOpen: (id: string) => void;
 }) {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const n = natures.find((x) => x.id === natureId);
   if (!n) return null;
   const derived = derivationEdges
@@ -22,7 +22,7 @@ export default function NaturePanel({
     <div className="reveal">
       <header className="domain-view-head">
         <span className="domain-view-id">{n.id}</span>
-        <h2 className="domain-view-name">{n.name}</h2>
+        <h2 className="domain-view-name">{tr(n.name)}</h2>
       </header>
 
       <section className="domain-block">
@@ -36,7 +36,7 @@ export default function NaturePanel({
           {derived.map((d) => (
             <li key={d.id}>
               <button type="button" onClick={() => onOpen(d.id.toLowerCase())}>
-                {d.id} {d.name}
+                {d.id} {tr(d.name)}
               </button>
             </li>
           ))}

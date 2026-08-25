@@ -5,6 +5,7 @@ import { nodes, orderIds } from "@/data/roadmap";
 import { scopeNode } from "@/data/scope";
 import { domains } from "@/data/framework";
 import { useI18n } from "@/components/I18n";
+import { enTitle } from "@/data/en";
 
 /* 顶栏站内搜索：标题/域名/类型包含匹配，↑↓ 选择，Enter 打开，Esc 关闭，Ctrl/Cmd+K 聚焦 */
 
@@ -47,6 +48,8 @@ const MAX = 12;
 
 export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) {
   const { lang, t } = useI18n();
+  /* 英文模式下额外按英文标题匹配，结果展示英文 */
+  const showTitle = (zh: string) => (lang === "en" ? enTitle[zh] ?? zh : zh);
   const kindLabel = KIND_LABELS[lang];
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
@@ -62,6 +65,7 @@ export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) 
       const domain = (n.domainId && DOMAIN_NAME[n.domainId]) || "";
       return (
         n.title.toLowerCase().includes(query) ||
+        showTitle(n.title).toLowerCase().includes(query) ||
         domain.toLowerCase().includes(query) ||
         kind.toLowerCase().includes(query)
       );
@@ -69,7 +73,7 @@ export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) 
       .sort((a, b) => (ORDER.get(a.id) ?? 999) - (ORDER.get(b.id) ?? 999))
       .slice(0, MAX);
     /* kindLabel 随语言切换重算匹配 */
-  }, [q, kindLabel]);
+  }, [q, kindLabel, lang]);
 
   useEffect(() => setActive(0), [q]);
 
@@ -149,7 +153,7 @@ export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) 
                 <span className={`tb-opt-kind k-${n.kind}`}>
                   {kindLabel[n.kind as keyof typeof kindLabel] ?? n.kind}
                 </span>
-                <span className="tb-opt-title">{n.title}</span>
+                <span className="tb-opt-title">{showTitle(n.title)}</span>
                 {n.domainId ? <span className="tb-opt-domain">{n.domainId}</span> : null}
               </li>
             ))

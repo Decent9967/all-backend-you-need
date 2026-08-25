@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { enTitle } from "@/data/en";
 
 /* 轻量 i18n：单页 hash 路由应用，用 Context + 词典即可，无需 next-intl 的路由层。
    UI 文案（顶栏/抽屉/图例/提示）双语；知识内容（笔记/不变量/题目）暂以中文编写，
@@ -137,10 +138,19 @@ const DICT = { zh, en };
 
 export type Dict = typeof zh;
 
-const LangCtx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: Dict }>({
+type I18nCtx = {
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  t: Dict;
+  /* 中文串 → 英文标题（enTitle 缺键回退原串）——节点/组框/副题共用 */
+  tr: (zh: string) => string;
+};
+
+const LangCtx = createContext<I18nCtx>({
   lang: "zh",
   setLang: () => {},
   t: DICT.zh,
+  tr: (zh) => zh,
 });
 
 const LANG_KEY = "kbr-lang";
@@ -162,7 +172,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
   }, [lang]);
 
-  return <LangCtx.Provider value={{ lang, setLang, t: DICT[lang] }}>{children}</LangCtx.Provider>;
+  const tr = (zh: string) => (lang === "en" ? enTitle[zh] ?? zh : zh);
+  return <LangCtx.Provider value={{ lang, setLang, t: DICT[lang], tr }}>{children}</LangCtx.Provider>;
 }
 
 export function useI18n() {

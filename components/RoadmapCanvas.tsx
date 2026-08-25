@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import {
   SPINE,
   anchorById,
@@ -31,7 +33,26 @@ export default function RoadmapCanvas({
   onOpen: (id: string) => void;
   onToggle: (id: string) => void;
 }) {
-  const { t } = useI18n();
+  const { t, tr, lang } = useI18n();
+
+  /* 英文标题更长：渲染后按实测文本长度缩字号，保证任何翻译都不溢出节点框 */
+  useEffect(() => {
+    const fit = () => {
+      document.querySelectorAll<SVGTextElement>(".rm-nlabel[data-w], .rm-ncaption[data-w]").forEach((el) => {
+        const box = Number(el.dataset.w);
+        el.style.fontSize = "";
+        const len = el.getComputedTextLength();
+        const budget = box - 14;
+        if (len > budget) {
+          const base = parseFloat(getComputedStyle(el).fontSize);
+          el.style.fontSize = `${Math.max(10, Math.floor((base * budget) / len))}px`;
+        }
+      });
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+  }, [lang]);
+
   const spineNodes = spineChain
     .map((id) => nodeById(id))
     .filter((n): n is RMNode => Boolean(n));
@@ -53,7 +74,7 @@ export default function RoadmapCanvas({
           <g key={g.id}>
             <rect className="rm-gbox" x={g.x} y={g.y} width={g.w} height={g.h} rx={5} />
             <text className="rm-gtitle" x={g.x + 14} y={g.y + 22}>
-              {g.title}
+              {tr(g.title)}
             </text>
           </g>
         ))}
@@ -114,7 +135,7 @@ export default function RoadmapCanvas({
               data-rm-kind={n.kind}
               tabIndex={0}
               role="button"
-              aria-label={`${n.title}${stateHint}`}
+              aria-label={`${tr(n.title)}${stateHint}`}
               onClick={() => onOpen(n.id)}
               onKeyDown={(ev) => {
                 if (ev.key === "Enter" || ev.key === " ") onOpen(n.id);
@@ -123,16 +144,16 @@ export default function RoadmapCanvas({
               <rect className="rm-nbox" width={n.w} height={n.h} rx={5} />
               {n.caption ? (
                 <>
-                  <text className="rm-nlabel" x={n.w / 2} y={27}>
-                    {n.title}
+                  <text className="rm-nlabel" data-w={n.w} x={n.w / 2} y={27}>
+                    {tr(n.title)}
                   </text>
-                  <text className="rm-ncaption" x={n.w / 2} y={49}>
-                    {n.caption}
+                  <text className="rm-ncaption" data-w={n.w} x={n.w / 2} y={49}>
+                    {tr(n.caption)}
                   </text>
                 </>
               ) : (
-                <text className="rm-nlabel" x={n.w / 2} y={n.h / 2 + 6}>
-                  {n.title}
+                <text className="rm-nlabel" data-w={n.w} x={n.w / 2} y={n.h / 2 + 6}>
+                  {tr(n.title)}
                 </text>
               )}
               {n.checkable ? (

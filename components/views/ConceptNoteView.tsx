@@ -1,6 +1,7 @@
 import { conceptNotes } from "@/data/notes";
 import { nodes } from "@/data/roadmap";
 import { useI18n } from "@/components/I18n";
+import { enNotes } from "@/data/en";
 
 /* 概念笔记页：一节点一页——定义 / 为什么 / 关键点 / 误区 / 相关概念跳转 / 材料 */
 
@@ -15,7 +16,9 @@ export default function ConceptNoteView({
   rowTitle?: string;
   onOpen: (id: string) => void;
 }) {
-  const { t } = useI18n();
+  const { lang, t, tr } = useI18n();
+  /* 英文正文缺键时整条笔记回退中文 */
+  const en = lang === "en" ? enNotes[`${domainId}|${title}`] : undefined;
   const note = domainId ? conceptNotes[`${domainId}|${title}`] : undefined;
   const bid = domainId?.toLowerCase();
   const domainMilestone = bid ? nodes.find((n) => n.id === bid) : undefined;
@@ -37,21 +40,21 @@ export default function ConceptNoteView({
     <div className="reveal">
       <header className="domain-view-head">
         <span className="domain-view-id">{domainId}</span>
-        <h2 className="domain-view-name">{title}</h2>
+        <h2 className="domain-view-name">{tr(title)}</h2>
       </header>
-      {rowTitle ? <p className="note-row-crumb">{t.crumbPrefix}{rowTitle}</p> : null}
+      {rowTitle ? <p className="note-row-crumb">{t.crumbPrefix}{tr(rowTitle)}</p> : null}
 
-      <p className="view-lede note-def">{note.def}</p>
+      <p className="view-lede note-def">{en?.def ?? note.def}</p>
 
       <section className="domain-block">
         <h3 className="mini-label">{t.noteWhy}</h3>
-        <p className="note-why">{note.why}</p>
+        <p className="note-why">{en?.why ?? note.why}</p>
       </section>
 
       <section className="domain-block">
         <h3 className="mini-label">{t.notePoints}</h3>
         <ul className="note-points">
-          {note.points.map((p) => (
+          {(en?.points ?? note.points).map((p) => (
             <li key={p}>{p}</li>
           ))}
         </ul>
@@ -60,7 +63,7 @@ export default function ConceptNoteView({
       {note.pitfall ? (
         <section className="domain-block note-pitfall">
           <h3 className="mini-label">{t.notePitfall}</h3>
-          <p>{note.pitfall}</p>
+          <p>{en?.pitfall ?? note.pitfall}</p>
         </section>
       ) : null}
 
@@ -73,7 +76,7 @@ export default function ConceptNoteView({
               return (
                 <li key={rid}>
                   <button type="button" onClick={() => onOpen(rid)}>
-                    {r.title}
+                    {tr(r.title)}
                   </button>
                 </li>
               );
@@ -105,7 +108,7 @@ export default function ConceptNoteView({
         <footer className="domain-cross-note">
           <span className="mini-label">{t.noteMoreInDomain}</span>
           <button type="button" className="intro-target" onClick={() => onOpen(bid!)}>
-            {t.viewDomain.replace('{name}', domainMilestone.title)}
+            {t.viewDomain.replace("{name}", tr(domainMilestone.title))}
           </button>
         </footer>
       ) : null}
