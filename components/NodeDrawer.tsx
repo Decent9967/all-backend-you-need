@@ -66,13 +66,17 @@ function DrawerBody({ node, onOpen }: { node: RMNode; onOpen: (id: string) => vo
 export default function NodeDrawer({
   node,
   done,
+  learning,
   onToggle,
+  onToggleLearning,
   onClose,
   onOpen,
 }: {
   node: RMNode;
   done: boolean;
+  learning: boolean;
   onToggle: (id: string) => void;
+  onToggleLearning: (id: string) => void;
   onClose: () => void;
   onOpen: (id: string) => void;
 }) {
@@ -105,13 +109,24 @@ export default function NodeDrawer({
             ← 上一个
           </button>
           {node.checkable ? (
-            <button
-              type="button"
-              className={`drawer-done${done ? " is-done" : ""}`}
-              onClick={() => onToggle(node.id)}
-            >
-              {done ? "已掌握 ✓" : "标记已掌握"}
-            </button>
+            <div className="drawer-state" role="group" aria-label="学习状态">
+              <button
+                type="button"
+                className={`drawer-state-btn${learning ? " is-learning" : ""}`}
+                aria-pressed={learning}
+                onClick={() => onToggleLearning(node.id)}
+              >
+                {learning ? "学习中 ✓" : "学习中"}
+              </button>
+              <button
+                type="button"
+                className={`drawer-state-btn${done ? " is-done" : ""}`}
+                aria-pressed={done}
+                onClick={() => onToggle(node.id)}
+              >
+                {done ? "已掌握 ✓" : "已掌握"}
+              </button>
+            </div>
           ) : (
             <button type="button" className="drawer-nav" onClick={onClose}>
               关闭

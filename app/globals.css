@@ -2484,6 +2484,32 @@ button.ft-row:hover .ft-label {
   stroke-width: 3.6;
 }
 
+/* roadmap.sh 同款交互反馈：hover/键盘聚焦时填充按色系变深（叠加上方描边加粗） */
+.rm-node.rm-bright:hover .rm-nbox,
+.rm-node.rm-bright:focus-visible .rm-nbox {
+  fill: #d6d700;
+}
+
+.rm-node.rm-pale:hover .rm-nbox,
+.rm-node.rm-pale:focus-visible .rm-nbox {
+  fill: #f3c950;
+}
+
+.rm-node.rm-purple:hover .rm-nbox,
+.rm-node.rm-purple:focus-visible .rm-nbox {
+  fill: #232381;
+}
+
+.rm-node.rm-gray:hover .rm-nbox,
+.rm-node.rm-gray:focus-visible .rm-nbox {
+  fill: #c3c3c3;
+}
+
+.rm-node.rm-plain:hover .rm-nbox,
+.rm-node.rm-plain:focus-visible .rm-nbox {
+  fill: #d7d7d7;
+}
+
 .rm-sel .rm-nbox {
   stroke: var(--rm-blue);
   stroke-width: 3.6;
@@ -2492,6 +2518,16 @@ button.ft-row:hover .ft-label {
 .rm-done .rm-nbox {
   stroke: var(--rm-green);
   stroke-width: 3.2;
+}
+
+/* 学习中（roadmap.sh 同款淡紫 + 下划线；置于变体色之后以覆盖填充与文字色） */
+.rm-learning .rm-nbox {
+  fill: #dad1fd;
+}
+
+.rm-learning .rm-nlabel {
+  fill: var(--rm-ink);
+  text-decoration: underline;
 }
 
 /* 右上角掌握角标 */
@@ -2675,6 +2711,44 @@ button.ft-row:hover .ft-label {
 .drawer-done.is-done {
   color: #fff;
   background: var(--rm-green);
+}
+
+/* 学习状态分段控件：学习中（淡紫）/ 已掌握（绿），互斥可反选 */
+.drawer-state {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.drawer-state-btn {
+  flex: 1;
+  min-width: 0;
+  font: 500 13px var(--sans);
+  font-family: var(--hand);
+  color: var(--ink);
+  background: var(--panel);
+  border: 1.6px solid var(--hairline-strong);
+  border-radius: 5px;
+  padding: 8px 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.drawer-state-btn:hover {
+  border-color: var(--accent);
+}
+
+.drawer-state-btn.is-learning {
+  background: #dad1fd;
+  border-color: var(--rm-purple);
+}
+
+.drawer-state-btn.is-done {
+  color: #fff;
+  background: var(--rm-green);
+  border-color: var(--rm-green);
 }
 
 /* 抽屉比全页窄：覆盖按视口写的多列布局，一律单列 */

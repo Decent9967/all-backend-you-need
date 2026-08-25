@@ -19,11 +19,13 @@ import {
 
 export default function RoadmapCanvas({
   done,
+  learning,
   selected,
   onOpen,
   onToggle,
 }: {
   done: Set<string>;
+  learning: Set<string>;
   selected: string | null;
   onOpen: (id: string) => void;
   onToggle: (id: string) => void;
@@ -98,17 +100,19 @@ export default function RoadmapCanvas({
         {/* 节点：单行居中标签（里程碑两行：标题 + 源本性副题）+ 掌握角标 */}
         {nodes.map((n) => {
           const isDone = done.has(n.id);
+          const isLearning = learning.has(n.id);
           const isSel = selected === n.id;
+          const stateHint = isDone ? "（已掌握）" : isLearning ? "（学习中）" : "";
           return (
             <g
               key={n.id}
-              className={`rm-node rm-${n.variant}${isSel ? " rm-sel" : ""}${isDone ? " rm-done" : ""}`}
+              className={`rm-node rm-${n.variant}${isSel ? " rm-sel" : ""}${isDone ? " rm-done" : ""}${isLearning ? " rm-learning" : ""}`}
               transform={`translate(${n.x}, ${n.y})`}
               data-rm-id={n.id}
               data-rm-kind={n.kind}
               tabIndex={0}
               role="button"
-              aria-label={`${n.title}${isDone ? "（已掌握）" : ""}`}
+              aria-label={`${n.title}${stateHint}`}
               onClick={() => onOpen(n.id)}
               onKeyDown={(ev) => {
                 if (ev.key === "Enter" || ev.key === " ") onOpen(n.id);

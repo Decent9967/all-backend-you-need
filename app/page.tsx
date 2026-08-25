@@ -11,6 +11,7 @@ import { scopeNode } from "@/data/scope";
    进度存 localStorage；Esc 关抽屉，←/→ 在抽屉间切换。 */
 
 const DONE_KEY = "kbr-done-v1";
+const LEARN_KEY = "kbr-learning-v1";
 
 const ALIASES: Record<string, string> = {
   natures: "n1",
@@ -37,14 +38,26 @@ function loadDone(): Set<string> {
   }
 }
 
+function loadLearning(): Set<string> {
+  try {
+    const raw = window.localStorage.getItem(LEARN_KEY);
+    const ids = raw ? (JSON.parse(raw) as string[]) : [];
+    return new Set(ids.filter((id) => nodeById(id)?.checkable));
+  } catch {
+    return new Set();
+  }
+}
+
 export default function Page() {
   const [sel, setSel] = useState<string | null>(null);
   const [done, setDone] = useState<Set<string>>(() => new Set());
+  const [learning, setLearning] = useState<Set<string>>(() => new Set());
   const [ready, setReady] = useState(false);
   const [staleHint, setStaleHint] = useState(false);
 
   useEffect(() => {
     setDone(loadDone());
+    setLearning(loadLearning());
     setReady(true);
     const update = () => {
       const id = parseHash();
@@ -74,19 +87,51 @@ export default function Page() {
     }
   }, [done, ready]);
 
+  useEffect(() => {
+    if (!ready) return;
+    try {
+      window.localStorage.setItem(LEARN_KEY, JSON.stringify([...learning]));
+    } catch {
+      /* 隐私模式等场景下静默失败 */
+    }
+  }, [learning, ready]);
+
   const open = (id: string) => {
     window.location.hash = `#/${id}`;
   };
   const close = () => {
     window.location.hash = "#/";
   };
-  const toggle = (id: string) =>
+  const toggle = (id: string) => {
     setDone((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
+    /* 掌握与学习中互斥：标记掌握时自动退出学习中 */
+    setLearning((prev) => {
+      if (!prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
+  const toggleLearning = (id: string) => {
+    setLearning((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    /* 开始学某个节点时自动撤销「已掌握」 */
+    setDone((prev) => {
+      if (!prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -124,7 +169,14 @@ export default function Page() {
 
   return (
     <div className="app-shell">
-      <TopBar done={done.size} onReset={() => setDone(new Set())} onOpen={open} />
+      <TopBar
+        done={done.size}
+        onReset={() => {
+          setDone(new Set());
+          setLearning(new Set());
+        }}
+        onOpen={open}
+      />
       <div className="sheet-wrap map-wrap">
         <main className="map-head" aria-live="polite">
           <p className="eyebrow">KB-01 · 后端工程治理知识框架</p>
@@ -161,13 +213,15 @@ export default function Page() {
             </span>
           </div>
         </main>
-        <RoadmapCanvas done={done} selected={sel} onOpen={open} onToggle={toggle} />
+        <RoadmapCanvas done={done} learning={learning} selected={sel} onOpen={open} onToggle={toggle} />
       </div>
       {selected ? (
         <NodeDrawer
           node={selected}
           done={done.has(selected.id)}
+          learning={learning.has(selected.id)}
           onToggle={toggle}
+          onToggleLearning={toggleLearning}
           onClose={close}
           onOpen={open}
         />
