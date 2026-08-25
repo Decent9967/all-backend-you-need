@@ -54,9 +54,10 @@ any framework.
 ## Language
 
 UI chrome (top bar, drawer, legend, hints) supports Chinese and English via
-the toggle in the top bar. Knowledge content is translated domain by domain
-(currently: the intro skeleton and D1); untranslated domains fall back to
-Chinese automatically. PRs welcome.
+the toggle in the top bar. All seven domains are translated end to end —
+node titles, the 84 concept notes, 31 invariants and every gate quiz;
+a few side views (exit calibration, scope registry, layer/method pages)
+still fall back to Chinese. PRs welcome.
 
 ## Quick start
 

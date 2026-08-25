@@ -173,6 +173,35 @@ export const enTitle: Record<string, string> = {
   "会话与令牌管理": "Session & Token Management",
   "传输与静态加密": "TLS & Encryption at Rest",
   "业务逻辑与防滥用": "Business Logic & Abuse",
+
+  /* D7 子主题行与概念节点 */
+  "把系统切开": "Cutting the system apart",
+  "谁对代码负责": "Who owns the code",
+  "让知识流动：评审": "Knowledge flow: review",
+  "让约定自动存活": "Keeping conventions alive automatically",
+  "安全地放出": "Releasing safely",
+  "环境一致性": "Environment Parity",
+  "借来的复杂度": "Borrowed complexity",
+  "欠下的债": "Accrued debt",
+  "旧接口怎么退场": "Retiring old interfaces",
+  "组织与系统": "Organization & system",
+  "值班与升级": "On-call & escalation",
+  "写下来": "Writing it down",
+  "模块边界": "Module Boundaries",
+  "依赖规则（单向 · 无环）": "Dependency Rules",
+  "规范自动化（lint · 门禁）": "Automated Rules (lint gates)",
+  "测试金字塔": "Test Pyramid",
+  "CI/CD": "CI/CD",
+  "ADR 架构决策记录": "ADRs",
+  "功能开关与灰度发布": "Feature Flags & Canaries",
+  "代码评审（Code Review）": "Code Review",
+  "代码所有权（CODEOWNERS）": "Code Ownership",
+  "第三方依赖管理": "Dependency Management",
+  "技术债管理": "Technical Debt",
+  "弃用与下线流程": "Deprecation & Sunset",
+  "康威定律与团队边界": "Conway's Law & Team Boundaries",
+  "值班与升级路径": "On-Call & Escalation",
+  "文档与 Runbook": "Docs & Runbooks",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -871,6 +900,166 @@ export const enNotes: Record<string, NoteEn> = {
     ],
     pitfall: "A marketing campaign launches without rate limits or budgets — one night, farmed to zero by scripts.",
   },
+  "D7|模块边界": {
+    def: "Split modules by business capability (not technical layers); boundaries are contracts, and crossing them goes through public interfaces only.",
+    why: "Parallel team development (nature N5) presupposes stable boundaries — the boundary is the division of labor.",
+    points: [
+      "Boundaries are explicit APIs/interfaces, not directory conventions.",
+      "Data ownership is decided at the boundary: every table has exactly one owner.",
+      "Technical layering (web/service/dao) lives inside a module, not between modules.",
+    ],
+    pitfall: "Modules by controller/service/dao — every business spreads horizontally and one requirement touches five directories.",
+  },
+  "D7|依赖规则（单向 · 无环）": {
+    def: "Module dependencies point one way only; a cycle means the boundary was drawn wrong.",
+    why: "An acyclic dependency graph is the precondition of testability (D7 invariant) — with cycles, nothing can be tested independently.",
+    points: [
+      "Check with tooling (ArchUnit/dependency-constraint), not by eye.",
+      "Shared code sinks downward; it doesn't get pulled sideways between modules.",
+      "Depend on interfaces, not implementations.",
+    ],
+    pitfall: "Easing circular dependencies by extracting yet another common — which becomes a dumping ground.",
+  },
+  "D7|规范自动化（lint · 门禁）": {
+    def: "Translate conventions into machine-checkable CI rules; violations fail the build.",
+    why: "Verbal conventions always rot; only machine-checkable ones survive (D7 invariant).",
+    points: [
+      "Rules live in CI; code review stops policing style manually.",
+      "New rules run in warn-only mode for two weeks before turning blocking.",
+      "Every rule documents its why, or it gets deleted as noise half a year later.",
+    ],
+    pitfall: "Shipping too many rules at once — the team switches lint off and it becomes theater.",
+  },
+  "D7|测试金字塔": {
+    def: "Many unit tests, fewer integration tests, fewer still end-to-end — layered by feedback speed.",
+    why: "Higher layers are slower and flakier; the pyramid shape is the natural result of maintenance cost.",
+    points: [
+      "Unit tests verify behavior, not implementation — refactors shouldn't turn them red.",
+      "Integration tests concentrate on boundaries: database, messaging, external services.",
+      "End-to-end keeps only critical-path smoke; it is not your functional regression.",
+    ],
+    pitfall: "All integration tests, forty minutes and randomly red — eventually nobody runs them.",
+  },
+  "D7|CI/CD": {
+    def: "Commit triggers automatic build, test and deployability; releasing becomes a low-risk, high-frequency act.",
+    why: "The more releases hurt, the rarer they get; the rarer, the bigger the batch, the more they hurt (N5's vicious cycle).",
+    points: [
+      "A red pipeline is the top-priority fix — don't skip it or rerun on luck.",
+      "Decouple deploy from release: deploy first, let traffic in via feature flags.",
+      "Every release has a rollback path, and the rollback has been rehearsed.",
+    ],
+    pitfall: "The CD pipeline is all green but nobody dares press release — what's missing is confidence, not tooling.",
+  },
+  "D7|ADR 架构决策记录": {
+    def: "One page per decision: context, options considered, the decision, reasoning, consequences.",
+    why: "Team memory drains away (N5); an unrecorded decision gets re-litigated six months later.",
+    points: [
+      "Numbered and stored in the repo, reviewed alongside code.",
+      "Overturned decisions are kept, with the reasons for the overturn.",
+      "The first reading for every new teammate's onboarding.",
+    ],
+    pitfall: "Decisions living only in meeting notes — gone with the next person.",
+  },
+  "D7|功能开关与灰度发布": {
+    def: "Control feature visibility with flags, combined with canary / blue-green: releases become controlled small-traffic experiments.",
+    why: "Deploy is not release: code goes up first, traffic follows — shrinking the error radius from everyone to 1%.",
+    points: [
+      "Flags default to off and carry expiry dates in their names — cleanup after release.",
+      "During canaries, watch SLOs / error rates; automated rollback beats humans.",
+      "Flags are a release tool, not architecture: every flag left behind is a new state combination.",
+    ],
+    pitfall: "Flags accumulate until the combinations explode and nobody dares delete any — the flags became the tech debt.",
+  },
+  "D7|环境一致性": {
+    def: "Development / staging / production are isomorphic: same images, same configuration approach, same dependency versions (dev/prod parity).",
+    why: "Works on my machine is rooted in environment drift (N5): the differences themselves are a defect source.",
+    points: [
+      "Build the artifact once, deploy to every environment — build once, run anywhere.",
+      "All configuration differences are explicit and external (env vars / config center), no if-environment in code.",
+      "Test data comes from masked production data, not hand-made toys.",
+    ],
+    pitfall: "A locally installed dependency missing from the lockfile — production builds a different thing than your machine runs.",
+  },
+  "D7|代码评审（Code Review）": {
+    def: "Small-batch, high-frequency peer review: every line of code gets a second pair of eyes.",
+    why: "Review is where governance executes — lint covers what machines can check, review covers what they can't: design soundness, edge cases, knowledge flow (D7 invariant).",
+    points: [
+      "PRs small enough to review in 30 minutes; a PR too big to review equals unreviewed.",
+      "Review standards live in the contributing guide: what must be raised vs. personal preference.",
+      "The primary output is knowledge flow, not gatekeeping — nobody is the only person who understands a module.",
+    ],
+    pitfall: "Reviews nitpicking formatting and naming — that's lint's job; review should look at error paths, boundaries and tests.",
+  },
+  "D7|代码所有权（CODEOWNERS）": {
+    def: "Every module has an explicit owner whose approvals gate changes to it (the CODEOWNERS mechanism).",
+    why: "Module boundaries degrade when nobody is accountable (N5); ownership is the social enforcement of boundaries.",
+    points: [
+      "The owner is the boundary's gatekeeper, not the sole author — others still contribute.",
+      "Ownership transfers explicitly when owners leave or rotate — process, not vibes.",
+      "CI validates the ownership file: a new directory must declare an owner.",
+    ],
+    pitfall: "Everyone is an owner = nobody is; approvals degenerate into reflexive sign-offs.",
+  },
+  "D7|第三方依赖管理": {
+    def: "Full-lifecycle dependency management: lockfiles pin versions, upgrades keep a cadence, vulnerabilities get responses.",
+    why: "Dependencies are borrowed complexity (D7 invariant): without proactive upgrades, they'll force one at the worst moment — a security incident.",
+    points: [
+      "Lockfiles in the repo for reproducible builds; direct and transitive dependencies both visible.",
+      "Minor upgrades are routine (weekly); major upgrades get their own schedule and review.",
+      "Subscribe to advisories (dependabot-style) and respond by severity tier.",
+    ],
+    pitfall: "A five-year-old dependency forced into a major-version jump by an incident — nobody knows what will break.",
+  },
+  "D7|技术债管理": {
+    def: "Register shortcuts explicitly: the debt amount, the interest (impact scope), and the repayment plan.",
+    why: "Unregistered debt doesn't disappear — it collects at the worst moment, billed as an incident (N5's time dimension).",
+    points: [
+      "Register into issues/ADRs tagged tech-debt, recording why it was the right call at the time.",
+      "Repayment takes a fixed slice of every iteration, not whenever we have time.",
+      "New debt passes review: state the interest and the repayment trigger.",
+    ],
+    pitfall: "We'll refactor after this crunch — the crunch never ends and the interest compounds monthly.",
+  },
+  "D7|弃用与下线流程": {
+    def: "Exit management for old interfaces and fields: announcement, per-caller usage monitoring, migration docs, sunset on schedule.",
+    why: "A system that only adds becomes a museum; without a deprecation process, staying compatible turns into an indefinite promise.",
+    points: [
+      "Deprecation notices carry a sunset date — an announcement without a date is just an apology letter (D7 invariant).",
+      "Monitor usage per caller; only cut off after it drops below threshold.",
+      "Provide migration docs and a grace window; internal callers migrate before the external sunset.",
+    ],
+    pitfall: "Just slap Deprecated on it, nobody reads it anyway — three years later it's still there and untouchable.",
+  },
+  "D7|康威定律与团队边界": {
+    def: "System structure mirrors the organization's communication structure — draw service boundaries along team boundaries.",
+    why: "A service boundary crossing teams means cross-team coordination on every change; governance must acknowledge organizational reality (N5).",
+    points: [
+      "One service, one clearly owning team — and vice versa.",
+      "Boundaries between teams go through formal API contracts, not shared libraries or shared tables.",
+      "Splitting microservices without moving the org just relocates the friction.",
+    ],
+    pitfall: "Three teams co-owning one service — priorities collide and nobody dares refactor it.",
+  },
+  "D7|值班与升级路径": {
+    def: "Who responds to which alert severity at which time, and who it escalates to when stuck — written down as an institution.",
+    why: "Alert tiers answer how severe; the on-call system answers who looks. Without an escalation path, the 3 a.m. incident runs on heroism.",
+    points: [
+      "Write and rehearse the escalation chain: primary → secondary → manager, with response windows.",
+      "On-call follows service ownership: those who operate it carry the pager.",
+      "Rotate and compensate; perpetual single-person duty ends in resignation.",
+    ],
+    pitfall: "When it breaks, call the one person who understands — the day he's on vacation, the incident upgrades to a disaster.",
+  },
+  "D7|文档与 Runbook": {
+    def: "Three document types reviewed alongside code: README (what it is), Runbook (how to operate), ADR (why it was decided).",
+    why: "Team memory drains (N5); alert tiers require every alert to carry a runbook — an alert without docs is not actionable.",
+    points: [
+      "Docs travel with code: reviewed in the same PR, versioned in the same directory.",
+      "Runbooks spell out steps and rollbacks, written for your panicked 3 a.m. self.",
+      "Every doc names its maintainer; stale docs are worse than none.",
+    ],
+    pitfall: "Docs that expire on arrival — an unowned wiki page misleads more than a blank page.",
+  },
 };
 
 /* ---------- 不变量 / 域元信息 / 毕业闸检索题 ---------- */
@@ -914,6 +1103,13 @@ export const enInvariants: Record<string, string[]> = {
     "Authorization checks must land on every object access, not just on endpoints.",
     "Passwords must be irreversible: when the database leaks, the slow hash is the user's last line of defense.",
   ],
+  D7: [
+    "Verbal conventions always rot; only machine-checkable conventions survive.",
+    "An acyclic dependency graph is the precondition of testability.",
+    "Code review's primary purpose is knowledge flow: a module only one person understands is a single point of failure.",
+    "Third-party dependencies are borrowed complexity: the moment there's no upgrade strategy, they start becoming liability.",
+    "A deprecation notice without a sunset date is just an apology letter.",
+  ],
 };
 
 export const enDomainMeta: Record<string, { name: string; problem: string; cross?: string }> = {
@@ -941,6 +1137,10 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D6: {
     name: "Security",
     problem: "Facing an untrusted network, real users and attackers — defend the data and the boundary.",
+  },
+  D7: {
+    name: "Engineering Governance",
+    problem: "Make conventions survive teams and time.",
   },
 };
 
@@ -1015,5 +1215,26 @@ export const enChecks: Record<
     ],
     explanation:
       "Secrets management belongs to D6 Security; machine-checkable rules are D7's invariant — don't mix the two.",
+  },
+  check8: {
+    question:
+      "The team agrees services must not import each other. Six months later, how do you confirm the convention is still alive?",
+    options: [
+      { label: "Write it in the wiki and read it aloud quarterly", correct: false },
+      { label: "Rely on reviewers remembering during code review", correct: false },
+      { label: "Encode it in lint gates / dependency checks; CI goes red on violation", correct: true },
+    ],
+    explanation:
+      "Verbal conventions rot; only machine-checkable ones survive — and an acyclic dependency graph is likewise CI-checkable. D7 invariants.",
+  },
+  check2: {
+    question: "Where does circuit breaking sit in the three-layer model?",
+    options: [
+      { label: "L1 Principles: the pattern itself hasn't changed in decades", correct: true },
+      { label: "L3 Implementation: Resilience4j must be relearned in every language", correct: false },
+      { label: "L2 Paradigms only, unrelated to principles", correct: false },
+    ],
+    explanation:
+      "Circuit breaking lives at the principle/paradigm layer — learn it once; Resilience4j, gobreaker and cockatiel are just different L3 skins.",
   },
 };
