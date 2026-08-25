@@ -36,3 +36,17 @@ CI（`.github/workflows/ci.yml`）会重跑前三项。
 - build 通过、审计全绿
 - commit 信息用中文，说清改了什么、为什么改
 - 内容改动请在 PR 描述里给出出处链接
+
+## 版本与发布
+
+- 版本号语义：`vMAJOR.MINOR.PATCH`——内容结构/交互大改升 MAJOR，
+  新增概念/域内容升 MINOR，修错（链接/文案/样式）升 PATCH
+- 发布流程：改 `package.json` 的 `version` → 提交 → 打 tag → 建 Release：
+
+```bash
+git tag vX.Y.Z
+git push origin main --tags
+gh release create vX.Y.Z --title "vX.Y.Z · 简短说明" --notes-file release-notes.md
+```
+
+- 每次推 main：CI 自动审计，GitHub Pages 自动重新部署，无需手动操作

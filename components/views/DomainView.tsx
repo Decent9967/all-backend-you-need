@@ -3,6 +3,7 @@ import type { Domain } from "@/data/framework";
 import { readingList } from "@/data/framework";
 import PillarsDiagram from "@/components/PillarsDiagram";
 import BuildBar from "@/components/BuildBar";
+import { useI18n } from "@/components/I18n";
 import { steps } from "@/data/sitemap";
 import D1ContractDiagram from "@/components/minis/D1ContractDiagram";
 import D2RaceDiagram from "@/components/minis/D2RaceDiagram";
@@ -29,6 +30,7 @@ export default function DomainView({
   stage: number;
   onAdvance: () => void;
 }) {
+  const { t } = useI18n();
   const Mini = MINIS[domain.id];
   const captions = steps.find((s) => s.id === domain.id.toLowerCase())?.stages;
   const reading = readingList.find((r) => r.domain === domain.id);
@@ -44,11 +46,11 @@ export default function DomainView({
       <div className="domain-cols">
         <div className="domain-col-left">
           <section className="domain-block">
-            <h3 className="mini-label">根本问题</h3>
+            <h3 className="mini-label">{t.dvProblem}</h3>
             <p className="domain-thesis">{domain.problem}</p>
           </section>
           <section className="domain-block">
-            <h3 className="mini-label">核心概念 · 跨语言词汇</h3>
+            <h3 className="mini-label">{t.dvConcepts}</h3>
             <ul className="chips">
               {domain.concepts.map((c) => (
                 <li key={c}>{c}</li>
@@ -59,7 +61,7 @@ export default function DomainView({
         <div className="domain-col-right">
           {Mini ? (
             <section className="domain-block">
-              <h3 className="mini-label">概念图</h3>
+              <h3 className="mini-label">{t.dvMap}</h3>
               <div className="figure figure-tight">
                 <Mini stage={stage} />
                 {captions ? (
@@ -70,14 +72,14 @@ export default function DomainView({
           ) : null}
           {domain.id === "D5" ? (
             <section className="domain-block">
-              <h3 className="mini-label">三支柱 · 三者不可互相替代</h3>
+              <h3 className="mini-label">{t.dvPillars}</h3>
               <div className="figure figure-tight">
                 <PillarsDiagram />
               </div>
             </section>
           ) : null}
           <section className="domain-block domain-invariant-panel">
-            <h3 className="mini-label mini-label-accent">不变量 · 换任何语言都成立</h3>
+            <h3 className="mini-label mini-label-accent">{t.dvInvariants}</h3>
             <ul className="domain-invariant-list">
               {domain.invariants.map((inv) => (
                 <li key={inv}>{inv}</li>
@@ -89,14 +91,14 @@ export default function DomainView({
 
       {domain.cross ? (
         <footer className="domain-cross-note">
-          <span className="mini-label">既有经验映射</span>
+          <span className="mini-label">{t.dvCross}</span>
           <span>{domain.cross}</span>
         </footer>
       ) : null}
 
       {reading ? (
         <footer className="domain-cross-note">
-          <span className="mini-label">本域书单 · 先读这几份建骨架</span>
+          <span className="mini-label">{t.dvReading}</span>
           <ul className="read-list">
             {reading.materials.map((m) =>
               m.url ? (

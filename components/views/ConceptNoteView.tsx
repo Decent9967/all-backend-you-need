@@ -1,5 +1,6 @@
 import { conceptNotes } from "@/data/notes";
 import { nodes } from "@/data/roadmap";
+import { useI18n } from "@/components/I18n";
 
 /* 概念笔记页：一节点一页——定义 / 为什么 / 关键点 / 误区 / 相关概念跳转 / 材料 */
 
@@ -14,6 +15,7 @@ export default function ConceptNoteView({
   rowTitle?: string;
   onOpen: (id: string) => void;
 }) {
+  const { t } = useI18n();
   const note = domainId ? conceptNotes[`${domainId}|${title}`] : undefined;
   const bid = domainId?.toLowerCase();
   const domainMilestone = bid ? nodes.find((n) => n.id === bid) : undefined;
@@ -21,7 +23,7 @@ export default function ConceptNoteView({
   if (!note) {
     return (
       <div className="reveal">
-        <p className="figure-note">这条笔记还在编写中——先看所在域的完整面板。</p>
+        <p className="figure-note">{t.noteMissing}</p>
       </div>
     );
   }
@@ -37,17 +39,17 @@ export default function ConceptNoteView({
         <span className="domain-view-id">{domainId}</span>
         <h2 className="domain-view-name">{title}</h2>
       </header>
-      {rowTitle ? <p className="note-row-crumb">子主题 · {rowTitle}</p> : null}
+      {rowTitle ? <p className="note-row-crumb">{t.crumbPrefix}{rowTitle}</p> : null}
 
       <p className="view-lede note-def">{note.def}</p>
 
       <section className="domain-block">
-        <h3 className="mini-label">为什么需要它</h3>
+        <h3 className="mini-label">{t.noteWhy}</h3>
         <p className="note-why">{note.why}</p>
       </section>
 
       <section className="domain-block">
-        <h3 className="mini-label">关键点</h3>
+        <h3 className="mini-label">{t.notePoints}</h3>
         <ul className="note-points">
           {note.points.map((p) => (
             <li key={p}>{p}</li>
@@ -57,14 +59,14 @@ export default function ConceptNoteView({
 
       {note.pitfall ? (
         <section className="domain-block note-pitfall">
-          <h3 className="mini-label">常见误区</h3>
+          <h3 className="mini-label">{t.notePitfall}</h3>
           <p>{note.pitfall}</p>
         </section>
       ) : null}
 
       {relatedIds.length ? (
         <section className="domain-block">
-          <h3 className="mini-label">相关概念 · 同域跳转</h3>
+          <h3 className="mini-label">{t.noteRelated}</h3>
           <ul className="chips chips-click">
             {relatedIds.map((rid) => {
               const r = nodes.find((n) => n.id === rid)!;
@@ -82,7 +84,7 @@ export default function ConceptNoteView({
 
       {note.materials?.length ? (
         <section className="domain-block">
-          <h3 className="mini-label">深入材料</h3>
+          <h3 className="mini-label">{t.noteMaterials}</h3>
           <ul className="read-list">
             {note.materials.map((m) => (
               <li key={m.title}>
@@ -101,9 +103,9 @@ export default function ConceptNoteView({
 
       {domainMilestone ? (
         <footer className="domain-cross-note">
-          <span className="mini-label">这一站的其他知识</span>
+          <span className="mini-label">{t.noteMoreInDomain}</span>
           <button type="button" className="intro-target" onClick={() => onOpen(bid!)}>
-            查看整个「{domainMilestone.title}」域 →
+            {t.viewDomain.replace('{name}', domainMilestone.title)}
           </button>
         </footer>
       ) : null}

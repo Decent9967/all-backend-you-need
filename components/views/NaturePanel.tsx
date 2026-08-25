@@ -1,4 +1,5 @@
 import { derivationEdges, domains, natures } from "@/data/framework";
+import { useI18n } from "@/components/I18n";
 
 /* 单个本性的抽屉面板：本性 + 它推导出的治理域（可点击跳转） */
 
@@ -9,6 +10,7 @@ export default function NaturePanel({
   natureId: string;
   onOpen: (id: string) => void;
 }) {
+  const { t } = useI18n();
   const n = natures.find((x) => x.id === natureId);
   if (!n) return null;
   const derived = derivationEdges
@@ -24,12 +26,12 @@ export default function NaturePanel({
       </header>
 
       <section className="domain-block">
-        <h3 className="mini-label">本性 · 任何后端系统都逃不掉</h3>
+        <h3 className="mini-label">{t.natureLabel}</h3>
         <p className="domain-thesis">{n.desc}。</p>
       </section>
 
       <section className="domain-block">
-        <h3 className="mini-label">由此推导出的治理域 · 点击查看</h3>
+        <h3 className="mini-label">{t.natureDerived}</h3>
         <ul className="chips chips-click">
           {derived.map((d) => (
             <li key={d.id}>
@@ -42,11 +44,11 @@ export default function NaturePanel({
       </section>
 
       <section className="domain-block">
-        <h3 className="mini-label">画布位置</h3>
+        <h3 className="mini-label">{t.natureCanvas}</h3>
         <ul className="chips chips-click">
           <li>
             <button type="button" onClick={() => onOpen("intro")}>
-              起点里程碑「后端是什么」→
+              {t.natureCanvasBtn}
             </button>
           </li>
         </ul>

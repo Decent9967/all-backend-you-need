@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { checkableCount } from "@/data/roadmap";
 import TopSearch from "@/components/TopSearch";
+import { useI18n } from "@/components/I18n";
 
 /* ---------- 顶栏：品牌 + 标题 + 搜索 + 学习进度 ---------- */
 
@@ -16,6 +17,7 @@ export function TopBar({
   onOpen: (id: string) => void;
 }) {
   const barRef = useRef<HTMLElement | null>(null);
+  const { lang, setLang, t } = useI18n();
   const total = checkableCount;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
@@ -34,7 +36,7 @@ export function TopBar({
   return (
     <header className="topbar" ref={barRef}>
       <div className="topbar-inner">
-        <a className="topbar-brand" href="#/" aria-label="回到路线图">
+        <a className="topbar-brand" href="#/" aria-label={t.brandAria}>
           KB-01
         </a>
         <span className="topbar-title">ALL BACKEND YOU NEED · 后端工程治理知识框架</span>
@@ -46,11 +48,19 @@ export function TopBar({
           <span className="tb-bar" aria-hidden="true">
             <span className="tb-fill" style={{ width: `${pct}%` }} />
           </span>
-          <button type="button" className="tb-reset" onClick={onReset} title="清空学习进度">
-            重置
+          <button
+            type="button"
+            className="tb-lang"
+            onClick={() => setLang(lang === "zh" ? "en" : "zh")}
+            title={lang === "zh" ? "Switch to English" : "切换到中文"}
+          >
+            {lang === "zh" ? "EN" : "中"}
           </button>
-          <a className="topbar-scope" href="#/scope" title="不进入/暂缓的知识项登记表">
-            范围边界
+          <button type="button" className="tb-reset" onClick={onReset} title={t.resetTitle}>
+            {t.reset}
+          </button>
+          <a className="topbar-scope" href="#/scope" title={t.scopeTitle}>
+            {t.scope}
           </a>
         </div>
       </div>

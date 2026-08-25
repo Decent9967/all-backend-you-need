@@ -11,6 +11,7 @@ import {
   spineChain,
   type RMNode,
 } from "@/data/roadmap";
+import { useI18n } from "@/components/I18n";
 
 /* 薄渲染层：复刻 roadmap.sh 的三线结构。
    中轴主线（实线：里程碑 → 毕业闸 → 下一站）+ 两侧子线
@@ -30,6 +31,7 @@ export default function RoadmapCanvas({
   onOpen: (id: string) => void;
   onToggle: (id: string) => void;
 }) {
+  const { t } = useI18n();
   const spineNodes = spineChain
     .map((id) => nodeById(id))
     .filter((n): n is RMNode => Boolean(n));
@@ -37,14 +39,14 @@ export default function RoadmapCanvas({
   return (
     <>
       <div className="rm-swipe-hint" aria-hidden="true">
-        ← 左右滑动查看全图 →
+        {t.swipeHint}
       </div>
       <div className="figure rm-figure">
       <svg
         className="rm-svg"
         viewBox={`0 0 ${canvas.width} ${canvas.height}`}
         role="img"
-        aria-label="后端工程治理知识框架路线图"
+        aria-label={t.canvasAria}
       >
         {/* 两侧组框（白底黑边 + 标题） */}
         {groups.map((g) => (
@@ -102,7 +104,7 @@ export default function RoadmapCanvas({
           const isDone = done.has(n.id);
           const isLearning = learning.has(n.id);
           const isSel = selected === n.id;
-          const stateHint = isDone ? "（已掌握）" : isLearning ? "（学习中）" : "";
+          const stateHint = isDone ? t.stateDone : isLearning ? t.stateLearning : "";
           return (
             <g
               key={n.id}
@@ -149,7 +151,7 @@ export default function RoadmapCanvas({
                   }}
                   tabIndex={0}
                   role="button"
-                  aria-label={isDone ? "取消已掌握" : "标记已掌握"}
+                  aria-label={isDone ? t.unmarkDone : t.markDone}
                 >
                   <circle r={6.5} />
                   <path d="M -3 0.4 L -0.9 2.6 L 3 -2.2" />

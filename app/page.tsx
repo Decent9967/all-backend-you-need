@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { TopBar } from "@/components/Chrome";
 import RoadmapCanvas from "@/components/RoadmapCanvas";
 import NodeDrawer from "@/components/NodeDrawer";
+import { I18nProvider, useI18n } from "@/components/I18n";
 import { nodeById, orderIds } from "@/data/roadmap";
 import { scopeNode } from "@/data/scope";
 
@@ -49,6 +50,15 @@ function loadLearning(): Set<string> {
 }
 
 export default function Page() {
+  return (
+    <I18nProvider>
+      <App />
+    </I18nProvider>
+  );
+}
+
+function App() {
+  const { t } = useI18n();
   const [sel, setSel] = useState<string | null>(null);
   const [done, setDone] = useState<Set<string>>(() => new Set());
   const [learning, setLearning] = useState<Set<string>>(() => new Set());
@@ -179,37 +189,33 @@ export default function Page() {
       />
       <div className="sheet-wrap map-wrap">
         <main className="map-head" aria-live="polite">
-          <p className="eyebrow">KB-01 · 后端工程治理知识框架</p>
+          <p className="eyebrow">{t.eyebrow}</p>
           <h1 className="map-title">ALL BACKEND YOU NEED</h1>
-          <p className="map-lede">
-            沿中间亮黄主线一站站走：起点讲清「为什么是这七件事」，D1–D7 的知识点
-            分列主线两侧，灰色闸是每站的毕业标准，底部紫色是出口。
-            点击任何节点看详情，右上角小圈记录掌握进度。
-          </p>
+          <p className="map-lede">{t.lede}</p>
           <div className="map-legend" aria-hidden="true">
             <span className="lg-item">
-              <span className="lg-sw lg-sw-bright" /> 主线里程碑
+              <span className="lg-sw lg-sw-bright" /> {t.legendMilestone}
             </span>
             <span className="lg-item">
-              <span className="lg-sw lg-sw-pale" /> 知识点
+              <span className="lg-sw lg-sw-pale" /> {t.legendConcept}
             </span>
             <span className="lg-item">
-              <span className="lg-sw lg-sw-gray" /> 毕业闸
+              <span className="lg-sw lg-sw-gray" /> {t.legendGate}
             </span>
             <span className="lg-item">
-              <span className="lg-sw lg-sw-purple" /> 进阶出口
+              <span className="lg-sw lg-sw-purple" /> {t.legendExit}
             </span>
             <span className="lg-item">
-              <span className="lg-solid" /> 学习主线
+              <span className="lg-solid" /> {t.legendSpine}
             </span>
             <span className="lg-item">
-              <span className="lg-dots" /> 展开（两侧）
+              <span className="lg-dots" /> {t.legendBranch}
             </span>
             <span className="lg-item">
-              <span className="lg-badge" /> 角标＝可勾选
+              <span className="lg-badge" /> {t.legendBadge}
             </span>
             <span className="lg-item">
-              <span className="lg-done" /> 变绿＝已掌握
+              <span className="lg-done" /> {t.legendDone}
             </span>
           </div>
         </main>
@@ -228,7 +234,7 @@ export default function Page() {
       ) : null}
       {staleHint ? (
         <div className="hash-toast" role="status">
-          链接已失效，已回到画布
+          {t.toastStale}
         </div>
       ) : null}
     </div>

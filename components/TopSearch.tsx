@@ -4,23 +4,40 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { nodes, orderIds } from "@/data/roadmap";
 import { scopeNode } from "@/data/scope";
 import { domains } from "@/data/framework";
+import { useI18n } from "@/components/I18n";
 
 /* 顶栏站内搜索：标题/域名/类型包含匹配，↑↓ 选择，Enter 打开，Esc 关闭，Ctrl/Cmd+K 聚焦 */
 
-const KIND_LABEL: Record<string, string> = {
-  intro: "起点",
-  nature: "本性",
-  "domain-header": "里程碑",
-  concept: "知识点",
-  checkpoint: "毕业闸",
-  layer: "层次",
-  "method-step": "方法",
-  "lens-note": "视角",
-  check: "自检",
-  decision: "出口",
-  synthesis: "出口",
-  scope: "登记表",
-};
+const KIND_LABELS = {
+  zh: {
+    intro: "起点",
+    nature: "本性",
+    "domain-header": "里程碑",
+    concept: "知识点",
+    checkpoint: "毕业闸",
+    layer: "层次",
+    "method-step": "方法",
+    "lens-note": "视角",
+    check: "自检",
+    decision: "出口",
+    synthesis: "出口",
+    scope: "登记表",
+  },
+  en: {
+    intro: "Start",
+    nature: "Nature",
+    "domain-header": "Milestone",
+    concept: "Concept",
+    checkpoint: "Gate",
+    layer: "Layer",
+    "method-step": "Method",
+    "lens-note": "Lens",
+    check: "Check",
+    decision: "Exit",
+    synthesis: "Exit",
+    scope: "Registry",
+  },
+} as const;
 
 const DOMAIN_NAME: Record<string, string> = Object.fromEntries(domains.map((d) => [d.id, d.name]));
 
@@ -29,6 +46,8 @@ const ORDER = new Map(orderIds.map((id, i) => [id, i]));
 const MAX = 12;
 
 export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) {
+  const { lang, t } = useI18n();
+  const kindLabel = KIND_LABELS[lang];
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
@@ -38,18 +57,19 @@ export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) 
     const query = q.trim().toLowerCase();
     if (!query) return [];
     return POOL.filter((n) => {
-      const kind = KIND_LABEL[n.kind] ?? "";
+      const kind = kindLabel[n.kind as keyof typeof kindLabel] ?? "";
       /* 本性节点 domainId 是 N1–N5，不在七域表内 */
       const domain = (n.domainId && DOMAIN_NAME[n.domainId]) || "";
       return (
         n.title.toLowerCase().includes(query) ||
         domain.toLowerCase().includes(query) ||
-        kind.includes(query)
+        kind.toLowerCase().includes(query)
       );
     })
       .sort((a, b) => (ORDER.get(a.id) ?? 999) - (ORDER.get(b.id) ?? 999))
       .slice(0, MAX);
-  }, [q]);
+    /* kindLabel 随语言切换重算匹配 */
+  }, [q, kindLabel]);
 
   useEffect(() => setActive(0), [q]);
 
@@ -98,8 +118,8 @@ export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) 
         ref={inputRef}
         type="text"
         value={q}
-        placeholder="搜索节点…（Ctrl+K）"
-        aria-label="搜索路线图节点"
+        placeholder={t.searchPlaceholder}
+        aria-label={t.searchAria}
         role="combobox"
         aria-expanded={open && results.length > 0}
         aria-controls="tb-search-list"
@@ -126,13 +146,15 @@ export default function TopSearch({ onOpen }: { onOpen: (id: string) => void }) 
                 onMouseEnter={() => setActive(i)}
                 onClick={() => pick(n.id)}
               >
-                <span className={`tb-opt-kind k-${n.kind}`}>{KIND_LABEL[n.kind] ?? n.kind}</span>
+                <span className={`tb-opt-kind k-${n.kind}`}>
+                  {kindLabel[n.kind as keyof typeof kindLabel] ?? n.kind}
+                </span>
                 <span className="tb-opt-title">{n.title}</span>
                 {n.domainId ? <span className="tb-opt-domain">{n.domainId}</span> : null}
               </li>
             ))
           ) : (
-            <li className="tb-opt tb-opt-empty">没有匹配「{q.trim()}」的节点</li>
+            <li className="tb-opt tb-opt-empty">{t.searchHint}</li>
           )}
         </ul>
       ) : null}

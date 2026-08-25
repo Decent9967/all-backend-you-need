@@ -14,6 +14,7 @@ import NaturePanel from "@/components/views/NaturePanel";
 import CheckpointPanel from "@/components/views/CheckpointPanel";
 import IntroPanel from "@/components/views/IntroPanel";
 import ConceptNoteView from "@/components/views/ConceptNoteView";
+import { useI18n } from "@/components/I18n";
 import LayerNoteView from "@/components/views/LayerNoteView";
 import StepNoteView from "@/components/views/StepNoteView";
 import CheckView from "@/components/views/CheckView";
@@ -80,6 +81,7 @@ export default function NodeDrawer({
   onClose: () => void;
   onOpen: (id: string) => void;
 }) {
+  const { t } = useI18n();
   const idx = orderIds.indexOf(node.id);
   const prev = orderIds[idx - 1];
   const next = orderIds[idx + 1];
@@ -92,7 +94,7 @@ export default function NodeDrawer({
         <header className="drawer-head">
           {headCode ? <span className="drawer-code">{headCode}</span> : null}
           <span className="drawer-title">{node.title}</span>
-          <button type="button" className="drawer-close" onClick={onClose} aria-label="关闭详情">
+          <button type="button" className="drawer-close" onClick={onClose} aria-label={t.closeAria}>
             ✕
           </button>
         </header>
@@ -106,17 +108,17 @@ export default function NodeDrawer({
             disabled={!prev}
             onClick={() => prev && onOpen(prev)}
           >
-            ← 上一个
+            {t.prev}
           </button>
           {node.checkable ? (
-            <div className="drawer-state" role="group" aria-label="学习状态">
+            <div className="drawer-state" role="group" aria-label={t.stateGroupAria}>
               <button
                 type="button"
                 className={`drawer-state-btn${learning ? " is-learning" : ""}`}
                 aria-pressed={learning}
                 onClick={() => onToggleLearning(node.id)}
               >
-                {learning ? "学习中 ✓" : "学习中"}
+                {learning ? t.learningOn : t.learning}
               </button>
               <button
                 type="button"
@@ -124,12 +126,12 @@ export default function NodeDrawer({
                 aria-pressed={done}
                 onClick={() => onToggle(node.id)}
               >
-                {done ? "已掌握 ✓" : "已掌握"}
+                {done ? t.masteredOn : t.mastered}
               </button>
             </div>
           ) : (
             <button type="button" className="drawer-nav" onClick={onClose}>
-              关闭
+              {t.close}
             </button>
           )}
           <button
@@ -138,7 +140,7 @@ export default function NodeDrawer({
             disabled={!next}
             onClick={() => next && onOpen(next)}
           >
-            下一个 →
+            {t.next}
           </button>
         </footer>
       </aside>
