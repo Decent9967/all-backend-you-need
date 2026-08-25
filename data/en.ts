@@ -115,6 +115,28 @@ export const enTitle: Record<string, string> = {
   "无状态与状态外置": "Stateless Processes",
   "数据生命周期": "Data Lifecycle",
   "流处理与批处理": "Streams & Batches",
+
+  /* D4 子主题行与概念节点 */
+  "先给一切上闹钟": "Put a clock on everything",
+  "失败后的反应": "Reacting to failure",
+  "隔离与自救": "Isolation & self-rescue",
+  "挡住洪流": "Holding back the flood",
+  "知道极限在哪": "Know your limits",
+  "演练：让弹性是真的": "Drills: making resilience real",
+  "入口与排空": "Entry & draining",
+  "放宽正确性换可用": "Trading correctness for availability",
+  "超时预算": "Timeout Budgets",
+  "重试 · 退避 · 抖动": "Retry · Backoff · Jitter",
+  "熔断": "Circuit Breakers",
+  "舱壁隔离": "Bulkheads",
+  "降级": "Graceful Degradation",
+  "背压": "Backpressure",
+  "最终一致性": "Eventual Consistency",
+  "限流与配额": "Rate Limiting & Quotas",
+  "负载均衡与网关": "Load Balancing & Gateways",
+  "优雅停机与健康检查": "Graceful Shutdown & Health Checks",
+  "容量规划与压测": "Capacity & Load Testing",
+  "故障演练（混沌工程）": "Chaos Engineering",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -491,6 +513,126 @@ export const enNotes: Record<string, NoteEn> = {
     ],
     pitfall: "A non-replayable pipeline: one consumption failure forces a full backfill, and the backfill itself becomes the next incident.",
   },
+  "D4|超时预算": {
+    def: "Set one end-to-end deadline for the whole call chain, then allocate it backwards hop by hop.",
+    why: "A call without a timeout is a random hang (D4 invariant); timeouts are a budget to allocate, not a guess.",
+    points: [
+      "Derive the budget from user-tolerable latency: 3s total — gateway 0.5s, service 1.5s, database 1s.",
+      "Upstream timeout >= the sum of downstream hops, or the upstream gives up while downstream keeps spinning.",
+      "Set connect, read and write timeouts separately.",
+    ],
+    pitfall: "Every layer sets 30s — one request can hang end to end for 90 seconds.",
+  },
+  "D4|重试 · 退避 · 抖动": {
+    def: "Retry with exponential backoff plus random jitter; retry only retryable errors.",
+    why: "Each layer retrying on its own exponentially amplifies downstream traffic (the retry storm, D4 invariant).",
+    points: [
+      "Retry only idempotent operations; for non-idempotent ones, build the idempotency token first.",
+      "Retries spend the timeout budget: cap the total duration.",
+      "Retry and circuit breaking act together: when the breaker is open, stop retrying.",
+    ],
+    pitfall: "Blindly retrying the order endpoint — one timeout becomes two orders.",
+  },
+  "D4|熔断": {
+    def: "After consecutive failures cross a threshold, trip the breaker: fail fast for a while and stop hitting the downstream.",
+    why: "The downstream is already sick; retries just twist the knife. Breaking gives the downstream recovery time and the upstream fast failure.",
+    points: [
+      "Three-state cycle: closed (normal) → open (fail fast) → half-open (probe recovery).",
+      "Break per dependency, not one global breaker.",
+      "Errors during an open breaker differ from ordinary errors and get their own monitoring signal.",
+    ],
+    pitfall: "One global circuit breaker — a single slow dependency fails every route fast together.",
+  },
+  "D4|舱壁隔离": {
+    def: "Give each dependency class its own resource pool (connections/threads/semaphores); failures stay contained in one compartment.",
+    why: "One flooded compartment shouldn't sink the ship — resource isolation decides the failure radius.",
+    points: [
+      "Pool size = the concurrency that dependency can bear, not as large as possible.",
+      "Isolation must cover both synchronous and asynchronous paths.",
+      "Couple with degradation: when a compartment fills, trigger that dependency's fallback.",
+    ],
+    pitfall: "Every downstream sharing one connection pool — the slowest one hogs it and everything else queues.",
+  },
+  "D4|降级": {
+    def: "When a dependency is unavailable, return a lossy but usable result: fallback values, stale cache, trimmed views.",
+    why: "Availability can be tiered by business — a broken recommendation panel must not take down checkout.",
+    points: [
+      "Fallback paths must be rehearsed in peacetime; an untested fallback is not trusted.",
+      "Degraded data carries a freshness label — don't pretend it's live.",
+      "Writes degrade through queue-and-compensate, never by dropping.",
+    ],
+    pitfall: "The first real degradation triggers an NPE inside the fallback logic itself.",
+  },
+  "D4|背压": {
+    def: "When the downstream overloads, the upstream senses it and slows down: bounded queues plus explicit rejection policies.",
+    why: "An unbounded queue only postpones failure to the moment memory runs out — and loses even more then.",
+    points: [
+      "Queues must be bounded; the bound is the backpressure trigger point.",
+      "Rejection policies need business semantics: fail fast, drop oldest, or degrade.",
+      "Consumption rate pushes back on production rate instead of brute-forcing through.",
+    ],
+    pitfall: "Absorbing the flood with an unbounded thread pool — ending in OOM and total failure.",
+  },
+  "D4|最终一致性": {
+    def: "Accept brief replica inconsistency in exchange for availability under partition — provided convergence is defined and measurable.",
+    why: "Strong consistency across a network is too expensive (the CAP trade) — most businesses need it consistent within N seconds.",
+    points: [
+      "Set a convergence target per inconsistency scenario (e.g. 5s).",
+      "Make conflict resolution explicit: LWW, version vectors, or business merges.",
+      "Read-your-own-writes needs session stickiness or reads from the primary.",
+    ],
+    pitfall: "Treating eventual consistency as don't-care consistency — never measuring convergence lag, never knowing how long it's been broken.",
+  },
+  "D4|限流与配额": {
+    def: "Limit request rate per unit time with token bucket / leaky bucket algorithms, with layered quotas by IP / user / endpoint.",
+    why: "Traffic from nature N1 is untrusted and unbounded — manage it proactively or be managed by it (OWASP API4, unrestricted resource consumption).",
+    points: [
+      "Layered limiting: coarse backstop at the gateway, fine-grained per user/endpoint in services.",
+      "Distributed limiting uses centralized counters (e.g. Redis); decide your clock-vs-accuracy trade.",
+      "Return a clear error code (429) plus Retry-After so callers can back off.",
+    ],
+    pitfall: "Limiting only at the gateway with no protection on internal calls — one runaway cron still punches through the whole chain.",
+  },
+  "D4|负载均衡与网关": {
+    def: "Reverse proxies / load balancers spread traffic across instances; the gateway centralizes authn, rate limiting and routing.",
+    why: "Multiple instances are the premise of availability; the entry layer decides how traffic arrives and how bad instances get removed.",
+    points: [
+      "Failing health checks remove instances automatically; recovery adds them back.",
+      "Session stickiness interacts with retry semantics: a retry may land on another instance, so writes must be idempotent.",
+      "Be stingy with LB-level retries — they multiply with upstream retries into a storm.",
+    ],
+    pitfall: "The gateway retrying POSTs by default — non-idempotent requests fired twice.",
+  },
+  "D4|优雅停机与健康检查": {
+    def: "On shutdown, drain traffic first and finish in-flight requests before exiting; expose liveness and readiness probes.",
+    why: "Releases are frequent (N5); without draining, every deploy is a small outage.",
+    points: [
+      "Read traffic leaves via readiness removal; write traffic waits for queues to drain or hands over.",
+      "Cap the shutdown wait — force-quit and alert past the deadline; never wait forever.",
+      "Health checks must probe real dependencies (database connectivity), not just return 200.",
+    ],
+    pitfall: "kill -9 straight to the process — in-flight requests all turn 502, a minutes-long error spike on every release.",
+  },
+  "D4|容量规划与压测": {
+    def: "Find the system's true limits by load testing, then plan resources against growth forecasts — rate limits and SLO commitments are grounded here.",
+    why: "Without knowing the limits, timeout budgets and rate quotas are guesses; capacity needs lead time.",
+    points: [
+      "Load-test the real chain with real data volume (shadow traffic / replay) — bare endpoint benchmarks don't count.",
+      "Express limits as input capacity: QPS x data size x concurrency, not a single number.",
+      "Capacity plans track growth forecasts with review dates on the calendar.",
+    ],
+    pitfall: "Load testing against ten thousand rows, shipping against a hundred million — the latency curve is a different animal.",
+  },
+  "D4|故障演练（混沌工程）": {
+    def: "Inject failures deliberately and controlled — kill instances, add latency, cut dependencies — to verify that breakers, fallbacks and draining actually work.",
+    why: "Resilience that has never fired only exists in config files (D4 invariant) — drills turn paper resilience into verified fact.",
+    points: [
+      "Start with a small blast radius: one instance → one availability zone → dependency cascades.",
+      "Define observability metrics and abort conditions before the drill; watch the dashboards throughout.",
+      "Findings feed the postmortem loop, or the drill is just theater.",
+    ],
+    pitfall: "Performing drills only in low-traffic windows, never rehearsing the real cascading-failure scenarios.",
+  },
 };
 
 /* ---------- 不变量 / 域元信息 / 毕业闸检索题 ---------- */
@@ -516,6 +658,13 @@ export const enInvariants: Record<string, string[]> = {
     "Money is always integer or fixed-point: floats computing money lose cents.",
     "Store time in UTC, transmit ISO 8601, localize only at the presentation layer.",
   ],
+  D4: [
+    "A call without a timeout is a random hang.",
+    "Each layer retrying on its own exponentially amplifies downstream traffic (the retry storm).",
+    "Timeouts are allocated backwards from an end-to-end budget, not guessed per layer.",
+    "Under overload, proactively rejecting some requests is protection; letting every request time out together is the incident.",
+    "Resilience that has never been rehearsed is just decoration in a config file.",
+  ],
 };
 
 export const enDomainMeta: Record<string, { name: string; problem: string; cross?: string }> = {
@@ -531,6 +680,10 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D3: {
     name: "Data & State",
     problem: "Make data outlive processes — and let it evolve safely.",
+  },
+  D4: {
+    name: "Distributed Resilience",
+    problem: "Design as if dependencies will definitely fail — treat it as the norm, not the exception.",
   },
 };
 
@@ -572,5 +725,16 @@ export const enChecks: Record<
     ],
     explanation:
       "Schema changes must decouple from code releases — old and new code running on the same schema is D3's first invariant.",
+  },
+  check6: {
+    question:
+      "Services A → B → C each configure retry-3-times on failure. When C breaks, what is the most likely chain reaction?",
+    options: [
+      { label: "No impact — retries are a protection mechanism", correct: false },
+      { label: "Circuit breakers auto-scale and absorb it", correct: false },
+      { label: "A retry storm: C's failure is amplified several-fold by two retrying layers above it", correct: true },
+    ],
+    explanation:
+      "Independent per-layer retries exponentially amplify downstream traffic; retries must obey an end-to-end budget — timeouts allocate backwards from the total, a D4 invariant.",
   },
 };
