@@ -101,6 +101,10 @@ microservices.io / RFC / 12-Factor 中文版 / PoEAA / NIST / K8s / 官方文档
 - **测试效应（检索练习）**：毕业自检的检索题，选错也显示正确项与解析
 - **先行组织者（Ausubel）**：脊柱 + 组框副标题先给全景与推导，再入节点细节
 
+## 许可证
+
+[MIT](./LICENSE)
+
 ## 运行
 
 ```bash
