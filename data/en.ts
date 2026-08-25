@@ -71,6 +71,23 @@ export const enTitle: Record<string, string> = {
   "消息投递语义": "Delivery Semantics",
   "契约测试": "Contract Testing",
   "HTTP 缓存语义": "HTTP Caching",
+
+  /* D2 子主题行与概念节点 */
+  "先看见问题": "See the problem first",
+  "数据库给的答案": "Answers from the database",
+  "应用层的答案": "Answers in the application",
+  "跨进程互斥": "Cross-process mutual exclusion",
+  "跨服务的一致性": "Consistency across services",
+  "后台的活：定时任务": "Background work: scheduled jobs",
+  "竞态条件": "Race Conditions",
+  "事务与隔离级别": "Transactions & Isolation",
+  "乐观锁 · 悲观锁": "Optimistic vs Pessimistic Locks",
+  "唯一约束": "Unique Constraints",
+  "幂等 token": "Idempotency Tokens",
+  "状态机": "State Machines",
+  "定时任务与调度": "Scheduled Jobs",
+  "分布式锁": "Distributed Locks",
+  "分布式事务与 Saga": "Distributed Tx & Saga",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -202,6 +219,98 @@ export const enNotes: Record<string, NoteEn> = {
     ],
     pitfall: "A user-specific response without `private` gets cached by a shared CDN — the next user reads someone else's data.",
   },
+  "D2|竞态条件": {
+    def: "The outcome depends on how concurrent operations interleave — same inputs, different order, different result.",
+    why: "Multiple requests share one piece of state (nature N2); there is always a time window between check and write.",
+    points: [
+      "Reproduce before fixing: use concurrency tests (many threads hitting one endpoint) to force the interleaving out.",
+      "Fixes in priority order: database constraints > transactions/locks > application-layer retry.",
+      "Whatever the storage layer can guarantee, don't hand-write in the application.",
+    ],
+    pitfall: "The default read-then-write ORM pattern works in dev, then oversells the moment load testing starts.",
+  },
+  "D2|事务与隔离级别": {
+    def: "Atomicity and isolation guarantees provided by the database; the isolation level decides what concurrent transactions can see of each other.",
+    why: "The first line of defense for correctness belongs in the storage layer — the application shouldn't reinvent it.",
+    points: [
+      "Every common level (RC/RR) has its anomalies: dirty reads, non-repeatable reads, phantoms, lost updates.",
+      "Stronger isolation means lower throughput; pick the level per business case, not max by default.",
+      "Transaction boundary = business boundary: no external calls inside a transaction.",
+    ],
+    pitfall: "Believing a transaction makes you concurrency-safe — lost updates still happen under RC.",
+  },
+  "D2|乐观锁 · 悲观锁": {
+    def: "Pessimistic locking takes the lock before operating (assumes conflicts are frequent); optimistic locking validates a version at commit (assumes they're rare).",
+    why: "Two cost models for concurrent writes to the same data — waiting vs retrying.",
+    points: [
+      "Choose by conflict rate: low → optimistic, high → pessimistic.",
+      "Optimistic retries need a cap and backoff, or you build your own retry storm.",
+      "Pessimistic locks must bound hold time — holding a lock across a network call breeds deadlocks.",
+      "Deadlock trio: consistent lock ordering everywhere, short transactions, no external calls while holding — the database deadlock log is the first evidence.",
+    ],
+    pitfall: "Insisting on optimistic locking under high conflict — the retry storm hurts more than lock waiting.",
+  },
+  "D2|唯一约束": {
+    def: "Back business uniqueness (one account per phone, one order per key) with a database unique index.",
+    why: "Application-layer checks can't close the concurrency window; a database constraint is the last line of defense, immune to deployment timing.",
+    points: [
+      "A unique index is the foundation of idempotent writes: conflict means duplicate.",
+      "Translate constraint violations into business error codes, not a 500.",
+      "Composite unique constraints model business keys (user_id + sku_id).",
+    ],
+    pitfall: "Deduplicating only in the application — two requests pass the check simultaneously, both inserts succeed.",
+  },
+  "D2|幂等 token": {
+    def: "A credential the server uses to recognize the same logical operation; repeated submissions return the first result instead of executing again.",
+    why: "Networks retry, so every write may execute twice (the D2 invariant) — idempotency is the default requirement for write APIs.",
+    points: [
+      "Persist the token inside the first write transaction — concurrency protection for free.",
+      "For in-flight tokens: hold subsequent requests or answer that it is in progress; never run them in parallel.",
+      "Tokens need a TTL and a scope (isolated per operation type).",
+    ],
+    pitfall: "Implementing idempotency as repeats-also-return-success while actually executing twice.",
+  },
+  "D2|状态机": {
+    def: "Model an entity's states and legal transitions explicitly; reject illegal transitions outright instead of relying on scattered ifs.",
+    why: "Concurrent interleavings often surface as illegal state jumps (paid, then cancelled again); a state machine turns those bugs into explicit checks.",
+    points: [
+      "Define transitions in one place; code may only call transition(from, event).",
+      "Persisted state + version number = optimistic locking for free.",
+      "Illegal transitions return a distinct error code, which makes timing bugs traceable.",
+    ],
+    pitfall: "Expressing state as boolean flags (isActive + isDeleted + isFrozen) — combinatorial explosion, nothing to validate against.",
+  },
+  "D2|定时任务与调度": {
+    def: "Governance of recurring background jobs: idempotent execution, multi-instance mutual exclusion, missed-run and off-peak policies.",
+    why: "Scheduled jobs are the quietest landmines in production (D2 invariant): scale to two instances and every job runs twice; miss one settlement window and it is an incident.",
+    points: [
+      "Jobs must be idempotent and re-runnable: a retry can't double the effect.",
+      "Multi-instance needs a distributed lock or a scheduler so exactly one instance runs at a time.",
+      "Off-peak timing (avoid the top of the hour) and catch-up for missed runs are explicit, written into job config.",
+      "Record each run (start/end/duration) and monitor it — silently failing jobs are the most dangerous.",
+    ],
+    pitfall: "A bare cron with two app replicas — every schedule issues double the coupons.",
+  },
+  "D2|分布式锁": {
+    def: "Cross-process mutual exclusion: Redis / etcd / the database arbitrating that only one instance runs this logic at a time.",
+    why: "Once you deploy multiple instances, in-process locks all stop working (N2's cluster version); cross-process critical sections need an external arbiter.",
+    points: [
+      "Locks must carry a TTL and an owner token: TTL prevents deadlock, the token prevents deleting someone else's lock.",
+      "Redis locks can vanish on failover — use fencing tokens or etcd/Consul on critical paths.",
+      "First ask whether you can skip the lock: unique constraints, idempotency, or queue serialization are often sturdier.",
+    ],
+    pitfall: "SETNX without an expiry — the holder crashes once and the whole system deadlocks forever.",
+  },
+  "D2|分布式事务与 Saga": {
+    def: "No atomic commit across services: 2PC sacrifices availability by locking resources; Saga splits a long transaction into local transactions plus compensating actions.",
+    why: "A single database's atomicity can't leave the process boundary (N2's distributed version); cross-service consistency is bought with business semantics.",
+    points: [
+      "Two Saga shapes: orchestration (central coordinator) vs choreography (event-driven); team size decides.",
+      "Every participant must be able to write its own undo — compensation is not optional (D2 invariant).",
+      "Isolation leaks: intermediate states are visible; add semantic locks where dirty reads would hurt.",
+    ],
+    pitfall: "Designing compensation only for the happy path — the first failure triggers a compensation chain that crashes itself.",
+  },
 };
 
 /* ---------- 不变量 / 域元信息 / 毕业闸检索题 ---------- */
@@ -213,6 +322,12 @@ export const enInvariants: Record<string, string[]> = {
     "All input is untrusted.",
     "Message systems only promise at-least-once: real exactly-once is assembled by consumer-side idempotency.",
   ],
+  D2: [
+    "Check-then-write always leaves a race window.",
+    "Networks retry, so every write may execute twice — idempotency is the default requirement for write APIs, not a bonus.",
+    "There is no atomic commit across services: every distributed-transaction participant must be able to write its own compensation.",
+    "Scheduled jobs re-enter and run concurrently by default: a background task without idempotency and mutual exclusion is a landmine in production.",
+  ],
 };
 
 export const enDomainMeta: Record<string, { name: string; problem: string; cross?: string }> = {
@@ -220,6 +335,10 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
     name: "Contracts & APIs",
     problem: "How do two independently evolving systems cooperate without breaking each other?",
     cross: "Prior experience: unified exception handling ≈ the D1 × D7 intersection",
+  },
+  D2: {
+    name: "Concurrency & Consistency",
+    problem: "When many requests read and write the same state simultaneously, how do you stay correct?",
   },
 };
 
@@ -240,5 +359,16 @@ export const enChecks: Record<
     ],
     explanation:
       "Contracts only ever add fields, never change semantics. \"Everyone ships simultaneously\" is a distributed-systems fantasy — additive values plus unknown-value fallbacks are what's actually safe.",
+  },
+  check1: {
+    question:
+      "Networks retry, so every write may execute twice — which domain owns this rule most directly?",
+    options: [
+      { label: "D3 Data & State: migrations must be idempotent", correct: false },
+      { label: "D2 Concurrency & Consistency: write APIs require idempotency by default", correct: true },
+      { label: "D4 Distributed Resilience: retries need backoff and jitter", correct: false },
+    ],
+    explanation:
+      "Duplicate execution from retries lands on the semantics of write — idempotency is D2's invariant; backoff and jitter are D4's countermeasures.",
   },
 };
