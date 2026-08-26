@@ -40,6 +40,7 @@ export const enTitle: Record<string, string> = {
   "源 N3 · 持久状态": "from N3 · Persistent state",
   "源 N4 · 依赖他系统": "from N4 · Depending on others",
   "源 N4 / N5 · 依赖他系统 / 长期演进": "from N4 / N5 · Dependence / Evolution",
+  "源 N5 · 长期演进": "from N5 · Long-term evolution",
 
   /* 毕业闸（同 ×N 的闸共用同一标题串）与出口 */
   "毕业自检 · 不变量 ×4": "Graduation Gate · 4 invariants",
@@ -254,6 +255,9 @@ export const enTitle: Record<string, string> = {
   "《DDIA》第 5、9 章": "DDIA · Ch.5 & 9",
   "《DDIA》第 7、9 章": "DDIA · Ch.7 & 9",
   "《DDIA》": "DDIA (Designing Data-Intensive Applications)",
+  "《DDIA》· Designing Data-Intensive Applications": "DDIA · Designing Data-Intensive Applications",
+  "martinfowler.com · Parallel Change（expand/contract）": "martinfowler.com · Parallel Change (expand/contract)",
+  "《Release It!》2nd Edition（Pragmatic）": "Release It! 2nd Edition (Pragmatic)",
   "你所用的数据库的隔离级别文档（以 PostgreSQL 为例）": "Your database's isolation docs (PostgreSQL as the example)",
   "有限状态机（Wikipedia）": "Finite-state machine (Wikipedia)",
   "令牌桶算法（Wikipedia）": "Token bucket (Wikipedia)",

@@ -41,7 +41,7 @@ function DrawerBody({ node, onOpen }: { node: RMNode; onOpen: (id: string) => vo
       return <CheckpointPanel domainId={node.domainId} checkId={node.checkId} />;
     case "check":
       return node.checkId ? (
-        <CheckView check={checks[node.checkId]} title={null} eyebrow={null} />
+        <CheckView check={checks[node.checkId]} checkId={node.checkId} title={null} eyebrow={null} />
       ) : null;
     case "layer":
       return node.id === "lens" ? (

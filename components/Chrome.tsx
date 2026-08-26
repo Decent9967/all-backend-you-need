@@ -39,7 +39,7 @@ export function TopBar({
         <a className="topbar-brand" href="#/" aria-label={t.brandAria}>
           KB-01
         </a>
-        <span className="topbar-title">ALL BACKEND YOU NEED · 后端工程治理知识框架</span>
+        <span className="topbar-title">ALL BACKEND YOU NEED · {t.topbarSubtitle}</span>
         <TopSearch onOpen={onOpen} />
         <div className="tb-progress">
           <span className="tb-count">

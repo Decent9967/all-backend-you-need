@@ -19,6 +19,7 @@ const zh = {
     scopeTitle: "不进入/暂缓的知识项登记表",
     searchHint: "没有匹配的节点",
     eyebrow: "KB-01 · 后端工程治理知识框架",
+    topbarSubtitle: "后端工程治理知识框架",
     lede: "沿中间亮黄主线一站站走：起点讲清「为什么是这七件事」，D1–D7 的知识点分列主线两侧，灰色闸是每站的毕业标准，底部紫色是出口。点击任何节点看详情，右上角小圈记录掌握进度。",
     legendMilestone: "主线里程碑",
     legendConcept: "知识点",
@@ -57,6 +58,10 @@ const zh = {
     gateLede: "合上材料，凭记忆把下面每条不变量讲清楚——讲不清的那条，就是你还没带走的东西。",
     invariants: "不变量 · 换任何语言都成立",
     retrieval: "检索练习",
+    checkEyebrow: "检索练习 · 先回想，再看答案",
+    checkDefaultTitle: "本章自检",
+    checksTitle: "三问自检",
+    checkQnum: "问题 {n} / 3",
     gateNote: "毕业标准不是「读完了」，而是「能复述并解释每条不变量」。",
     dvProblem: "根本问题",
     dvConcepts: "核心概念 · 跨语言词汇",
@@ -124,6 +129,7 @@ const en: typeof zh = {
     scopeTitle: "Registry of out-of-scope / deferred items",
     searchHint: "No matching nodes",
     eyebrow: "KB-01 · A Backend Governance Knowledge Framework",
+    topbarSubtitle: "A Backend Governance Knowledge Framework",
     lede: "Follow the bright-yellow spine station by station: the start explains why these seven things, D1–D7 concepts line both sides, gray gates are each station's graduation bar, and purple nodes at the bottom are the exits. Click any node for details; the small circle at its corner tracks mastery.",
     legendMilestone: "Milestone",
     legendConcept: "Concept",
@@ -162,6 +168,10 @@ const en: typeof zh = {
     gateLede: "Close the materials and explain each invariant from memory — the one you can't articulate is the one you haven't taken with you.",
     invariants: "Invariants · true in any language",
     retrieval: "Retrieval practice",
+    checkEyebrow: "Retrieval practice · recall first, then reveal",
+    checkDefaultTitle: "Chapter self-check",
+    checksTitle: "Three-question self-check",
+    checkQnum: "Question {n} / 3",
     gateNote: "Graduating isn't \"finished reading\" — it's being able to restate and explain every invariant.",
     dvProblem: "Core problem",
     dvConcepts: "Core concepts · vocabulary that transfers",
@@ -256,7 +266,22 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
   }, [lang]);
 
-  const tr = (zh: string) => (lang === "en" ? enTitle[zh] ?? zh : zh);
+  const tr = (zh: string) => {
+    if (lang !== "en") return zh;
+    const en = enTitle[zh];
+    if (en) return en;
+    /* 未收录词条兜底：把 CJK 标点归一化，避免英文串里夹全角括号/书名号 */
+    return zh
+      .replace(/[《》「」『』]/g, "")
+      .replace(/（/g, " (")
+      .replace(/）/g, ")")
+      .replace(/，/g, ", ")
+      .replace(/：/g, ": ")
+      .replace(/；/g, "; ")
+      .replace(/。/g, ".")
+      .replace(/！/g, "!")
+      .replace(/？/g, "?");
+  };
   return <LangCtx.Provider value={{ lang, setLang, t: DICT[lang], tr }}>{children}</LangCtx.Provider>;
 }
 
