@@ -1133,6 +1133,22 @@ export const conceptNotes: Record<string, ConceptNote> = {
     related: ["ADR 架构决策记录", "告警分级", "值班与升级路径"],
     materials: [{ title: "《Google SRE Workbook》· 事故响应与 Runbook", url: "https://sre.google/workbook/incident-response/" }],
   },
+  "D7|棘轮机制（只进不退）": {
+    def: "把质量基线（存量违规数、未覆盖行数、技术债条目数）写进仓库，CI 只允许它变好、不允许变坏——像棘轮一样，转过的齿不再退回。",
+    why: "规范自动化回答「约定能否被机器检查」，棘轮回答「指标能否只往一个方向走」；没有棘轮，专项清理的成果会被日常熵增（N5）一点点吃回去。",
+    points: [
+      "基线文件进仓库，CI 比对当前值：变好即自动收紧并提交新基线，变坏即红。",
+      "从当前值起棘轮，不从理想值起：第一天全院飘红，棘轮就死了。",
+      "只棘轮单调可数的指标（违规、告警、未覆盖行、债条目）；比率型指标要防分母游戏。",
+      "棘轮保底不冲刺：定期主动收紧行，还清存量仍需专项。",
+    ],
+    pitfall: "为凑覆盖率删测试、标 exclude——棘轮了虚荣指标比不棘轮更糟；没人敢重置的僵尸基线同样是一笔债。",
+    related: ["规范自动化（lint · 门禁）", "技术债管理", "测试金字塔", "CI/CD"],
+    materials: [
+      { title: "betterer · 把违规数做成只降不升的基线", url: "https://github.com/phenomnomnominal/betterer" },
+      { title: "Codecov · 覆盖率门禁与状态比对", url: "https://docs.codecov.com/docs/commit-status" },
+    ],
+  },
 };
 
 /* ---------- 三层模型（L1–L3 各自一页） ---------- */

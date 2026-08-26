@@ -344,7 +344,7 @@ const DOMAIN_ROWS: Record<string, { title: string; concepts: string[] }[]> = {
     { title: "把系统切开", concepts: ["模块边界", "依赖规则（单向 · 无环）"] },
     { title: "谁对代码负责", concepts: ["代码所有权（CODEOWNERS）"] },
     { title: "让知识流动：评审", concepts: ["代码评审（Code Review）"] },
-    { title: "让约定自动存活", concepts: ["规范自动化（lint · 门禁）", "测试金字塔", "CI/CD"] },
+    { title: "让约定自动存活", concepts: ["规范自动化（lint · 门禁）", "测试金字塔", "CI/CD", "棘轮机制（只进不退）"] },
     { title: "安全地放出", concepts: ["功能开关与灰度发布"] },
     { title: "环境一致性", concepts: ["环境一致性"] },
     { title: "借来的复杂度", concepts: ["第三方依赖管理"] },

@@ -203,6 +203,9 @@ export const enTitle: Record<string, string> = {
   "康威定律与团队边界": "Conway's Law & Team Boundaries",
   "值班与升级路径": "On-Call & Escalation",
   "文档与 Runbook": "Docs & Runbooks",
+  "棘轮机制（只进不退）": "Ratchet (forward only)",
+  "betterer · 把违规数做成只降不升的基线": "betterer · a baseline violations can only shrink",
+  "Codecov · 覆盖率门禁与状态比对": "Codecov · coverage gates and status checks",
 
   /* 范围登记表：条目与分类 */
   "范围边界登记表": "Scope Registry",
@@ -1188,6 +1191,17 @@ export const enNotes: Record<string, NoteEn> = {
       "Every doc names its maintainer; stale docs are worse than none.",
     ],
     pitfall: "Docs that expire on arrival — an unowned wiki page misleads more than a blank page.",
+  },
+  "D7|棘轮机制（只进不退）": {
+    def: "Commit the quality baseline (violation count, uncovered lines, tech-debt items) to the repo and let CI accept only improvements — like a ratchet, the teeth never slip back.",
+    why: "Automated rules answer \"can the convention be machine-checked\"; the ratchet answers \"can the metric move in only one direction\". Without it, every cleanup campaign erodes back through daily entropy (N5).",
+    points: [
+      "The baseline file lives in the repo; CI compares: better auto-tightens and commits the new baseline, worse goes red.",
+      "Start the ratchet at today's value, not the ideal one — if day one is all red, the ratchet is dead on arrival.",
+      "Only ratchet monotonically countable metrics (violations, alerts, uncovered lines, debt items); ratio metrics invite denominator games.",
+      "A ratchet holds the floor, it doesn't sprint: tighten the line proactively and still schedule dedicated paydown work.",
+    ],
+    pitfall: "Deleting tests or marking exclude to inflate coverage — ratcheting a vanity metric is worse than no ratchet; a zombie baseline nobody dares reset is itself debt.",
   },
 };
 
