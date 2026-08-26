@@ -287,7 +287,7 @@ function stage(opts: {
 const DOMAIN_ROWS: Record<string, { title: string; concepts: string[] }[]> = {
   D1: [
     { title: "契约思维：接口是承诺", concepts: ["统一响应模型", "错误码体系"] },
-    { title: "安全地演进：只加不改", concepts: ["版本化", "Schema 前向 / 后向兼容"] },
+    { title: "安全地演进：只加不改", concepts: ["版本化", "Schema 前向 / 后向兼容", "海勒姆定律（Hyrum's Law）"] },
     { title: "健壮的输入", concepts: ["入参声明式校验", "幂等键", "分页"] },
     { title: "缓存也是契约", concepts: ["HTTP 缓存语义"] },
     { title: "怎么通信 · 同步选一种", concepts: ["通信范式选择"] },
@@ -344,12 +344,12 @@ const DOMAIN_ROWS: Record<string, { title: string; concepts: string[] }[]> = {
     { title: "把系统切开", concepts: ["模块边界", "依赖规则（单向 · 无环）"] },
     { title: "谁对代码负责", concepts: ["代码所有权（CODEOWNERS）"] },
     { title: "让知识流动：评审", concepts: ["代码评审（Code Review）"] },
-    { title: "让约定自动存活", concepts: ["规范自动化（lint · 门禁）", "测试金字塔", "CI/CD", "棘轮机制（只进不退）"] },
+    { title: "让约定自动存活", concepts: ["规范自动化（lint · 门禁）", "测试金字塔", "CI/CD", "棘轮机制（只进不退）", "黄金路径（Paved Road）"] },
     { title: "安全地放出", concepts: ["功能开关与灰度发布"] },
     { title: "环境一致性", concepts: ["环境一致性"] },
     { title: "借来的复杂度", concepts: ["第三方依赖管理"] },
     { title: "欠下的债", concepts: ["技术债管理"] },
-    { title: "旧接口怎么退场", concepts: ["弃用与下线流程"] },
+    { title: "旧接口怎么退场", concepts: ["弃用与下线流程", "绞杀者模式（Strangler Fig）"] },
     { title: "组织与系统", concepts: ["康威定律与团队边界"] },
     { title: "值班与升级", concepts: ["值班与升级路径"] },
     { title: "写下来", concepts: ["文档与 Runbook", "ADR 架构决策记录"] },

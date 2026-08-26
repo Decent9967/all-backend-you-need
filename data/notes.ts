@@ -190,6 +190,18 @@ export const conceptNotes: Record<string, ConceptNote> = {
       { title: "RFC 9111", url: "https://www.rfc-editor.org/rfc/rfc9111" },
     ],
   },
+  "D1|海勒姆定律（Hyrum's Law）": {
+    def: "只要调用方足够多，接口的一切可观察行为——包括你没承诺过的——都会被某人依赖。",
+    why: "契约里写的是承诺，调用方消费的是观察：报文格式、字段顺序、甚至报错频率，都会被当成功能用；这是「版本化」「兼容」之所以困难的根源。",
+    points: [
+      "把「显式契约」与「事实行为」分开管理：契约要小而明确，事实行为要假设已有人依赖。",
+      "缩小可观察面就是缩小被依赖面：字段能不返回就不返回，内部细节能不暴露就不暴露。",
+      "改动「没人承诺却有人依赖」的行为，等价于一次破坏性变更——要走版本化与弃用流程。",
+    ],
+    pitfall: "以为文档没写的就不算契约——调用方不看文档，只看线上实际返回。",
+    related: ["版本化", "Schema 前向 / 后向兼容", "契约测试", "HTTP 缓存语义"],
+    materials: [{ title: "hyrumslaw.com · 定律原文", url: "https://www.hyrumslaw.com/" }],
+  },
 
   /* ---------- D2 并发与一致性 ---------- */
   "D2|竞态条件": {
@@ -1005,6 +1017,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "编号存 repo，随代码一起评审。",
       "被推翻的决策也保留，并记录推翻原因。",
       "新同学 onboarding 的第一份读物。",
+      "区分单向门与双向门：不可逆决策（数据模型、对外契约）充分评审再过；可逆决策快进快出、错了再改——别把每扇门都当重门推。",
     ],
     pitfall: "决策只活在会议纪要里，换个人就找不到了。",
     related: ["模块边界", "文档与 Runbook"],
@@ -1044,6 +1057,7 @@ export const conceptNotes: Record<string, ConceptNote> = {
       "PR 小到 30 分钟内能评完；评不完的大 PR 等于没评。",
       "评审标准写进贡献指南：什么是必须提的意见、什么只是个人偏好。",
       "首要产出是知识流动，不是把关——没有人独懂任何模块。",
+      "童子军规则：评审时顺手带走路过的小破损（命名、死代码、误导注释）——营地比来时干净，破窗才不会越积越多。",
     ],
     pitfall: "评审只纠缠格式和命名——这些已交给 lint，评审该看的是错误路径、边界和测试。",
     related: ["规范自动化（lint · 门禁）", "代码所有权（CODEOWNERS）", "测试金字塔"],
@@ -1148,6 +1162,30 @@ export const conceptNotes: Record<string, ConceptNote> = {
       { title: "betterer · 把违规数做成只降不升的基线", url: "https://github.com/phenomnomnominal/betterer" },
       { title: "Codecov · 覆盖率门禁与状态比对", url: "https://docs.codecov.com/docs/commit-status" },
     ],
+  },
+  "D7|绞杀者模式（Strangler Fig）": {
+    def: "在旧系统外围逐步长出新实现，按路由把流量一点点切过去，直到旧核枯萎摘除——像绞杀榕替换宿主。",
+    why: "大爆炸重写的时间越长、与生产的偏差越大（N5）；增量替换把「换系统」拆成一串可回滚的小发布。",
+    points: [
+      "先立路由/防腐层：新旧并存期间在边界做转换，不让旧模型渗进新代码。",
+      "按风险切流：先切只读和低风险路径，积累信心与回滚经验再切写路径。",
+      "旧代码的退场要显式排期（衔接弃用流程），否则绞杀到一半变成永久共存。",
+    ],
+    pitfall: "新需求忍不住又塞进旧核「顺手改」——绞杀藤长着长着被宿主同化。",
+    related: ["弃用与下线流程", "功能开关与灰度发布", "模块边界", "ADR 架构决策记录"],
+    materials: [{ title: "martinfowler.com · Strangler Fig Application", url: "https://martinfowler.com/bliki/StranglerFigApplication.html" }],
+  },
+  "D7|黄金路径（Paved Road）": {
+    def: "用模板、脚手架和内部组件库，把「推荐做法」做成「最省力的做法」——治理不只靠禁止，更靠更顺手的默认。",
+    why: "规范自动化挡住错误的路（禁），棘轮守住已有质量（防），铺路让正确的路最快（导）——三者合起来治理才闭环。",
+    points: [
+      "新服务从模板一条命令创建：CI、可观测性、安全基线全部预置。",
+      "内部组件库封装最佳实践：用官方客户端的人自动获得重试、熔断与 trace。",
+      "偏离铺路要有显式出口：声明理由与 owner，而不是悄悄手搓。",
+    ],
+    pitfall: "铺的路没人维护，变成年久失修的高速——大家绕小道，治理悄悄失效。",
+    related: ["规范自动化（lint · 门禁）", "棘轮机制（只进不退）", "代码所有权（CODEOWNERS）", "环境一致性"],
+    materials: [{ title: "Spotify · How We Use Golden Paths", url: "https://engineering.atspotify.com/2020/08/17/how-we-use-golden-paths-to-solve-fragmentation-in-our-software-ecosystem/" }],
   },
 };
 

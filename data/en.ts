@@ -204,8 +204,12 @@ export const enTitle: Record<string, string> = {
   "值班与升级路径": "On-Call & Escalation",
   "文档与 Runbook": "Docs & Runbooks",
   "棘轮机制（只进不退）": "Ratchet (forward only)",
+  "绞杀者模式（Strangler Fig）": "Strangler Fig",
+  "黄金路径（Paved Road）": "Paved Road",
+  "海勒姆定律（Hyrum's Law）": "Hyrum's Law",
   "betterer · 把违规数做成只降不升的基线": "betterer · a baseline violations can only shrink",
   "Codecov · 覆盖率门禁与状态比对": "Codecov · coverage gates and status checks",
+  "hyrumslaw.com · 定律原文": "hyrumslaw.com · the law, stated",
 
   /* 范围登记表：条目与分类 */
   "范围边界登记表": "Scope Registry",
@@ -1089,6 +1093,7 @@ export const enNotes: Record<string, NoteEn> = {
       "Numbered and stored in the repo, reviewed alongside code.",
       "Overturned decisions are kept, with the reasons for the overturn.",
       "The first reading for every new teammate's onboarding.",
+      "Separate one-way from two-way doors: irreversible decisions (data models, public contracts) get full review; reversible ones move fast and get fixed if wrong — don't push every door like a heavy one.",
     ],
     pitfall: "Decisions living only in meeting notes — gone with the next person.",
   },
@@ -1119,6 +1124,7 @@ export const enNotes: Record<string, NoteEn> = {
       "PRs small enough to review in 30 minutes; a PR too big to review equals unreviewed.",
       "Review standards live in the contributing guide: what must be raised vs. personal preference.",
       "The primary output is knowledge flow, not gatekeeping — nobody is the only person who understands a module.",
+      "Boy-Scout rule: leave the campsite cleaner — carry away small breakage you pass by (naming, dead code, misleading comments) so broken windows don't accumulate.",
     ],
     pitfall: "Reviews nitpicking formatting and naming — that's lint's job; review should look at error paths, boundaries and tests.",
   },
@@ -1202,6 +1208,36 @@ export const enNotes: Record<string, NoteEn> = {
       "A ratchet holds the floor, it doesn't sprint: tighten the line proactively and still schedule dedicated paydown work.",
     ],
     pitfall: "Deleting tests or marking exclude to inflate coverage — ratcheting a vanity metric is worse than no ratchet; a zombie baseline nobody dares reset is itself debt.",
+  },
+  "D7|绞杀者模式（Strangler Fig）": {
+    def: "Grow the new implementation around the old one and route traffic across piece by piece until the legacy core withers and is removed — a strangler fig replacing its host.",
+    why: "The longer a big-bang rewrite runs, the further it drifts from production (N5); incremental replacement turns 'replacing a system' into a series of revertible releases.",
+    points: [
+      "Establish the routing / anti-corruption layer first: convert at the boundary while old and new coexist; never let old models seep into new code.",
+      "Shift traffic by risk: read-only and low-risk paths first; move to write paths once confidence and rollback experience accumulate.",
+      "Schedule the legacy code's exit explicitly (ties into deprecation) — otherwise the strangling stalls halfway into permanent coexistence.",
+    ],
+    pitfall: "Sneaking new requirements into the old core because it's 'faster' — the fig gets assimilated by its host.",
+  },
+  "D7|黄金路径（Paved Road）": {
+    def: "Use templates, scaffolding and internal component libraries to make the recommended way the laziest way — governance by better defaults, not just prohibition.",
+    why: "Automated rules block the wrong path (forbid), the ratchet guards existing quality (hold), paving makes the right path fastest (guide) — only together do they close the loop.",
+    points: [
+      "A new service is one command from the template: CI, observability and security baselines pre-wired.",
+      "Internal libraries encapsulate best practice: users of the official client get retries, circuit breaking and tracing for free.",
+      "Leaving the paved road needs an explicit exit: stated reason plus owner, not quiet hand-rolling.",
+    ],
+    pitfall: "The paved road falls into disrepair and becomes a potholed highway — people take the side trails and governance quietly fails.",
+  },
+  "D1|海勒姆定律（Hyrum's Law）": {
+    def: "Given enough callers, every observable behavior of your interface — including what you never promised — will be depended on by someone.",
+    why: "The contract states promises; callers consume observations: payload shapes, field order, even error frequency get used as features. This is the root cause of why versioning and compatibility are hard.",
+    points: [
+      "Manage explicit contracts and de-facto behavior separately: keep the contract small and precise; assume observed behavior already has dependents.",
+      "Shrinking the observable surface shrinks the depended-on surface: return as few fields as possible, expose as little internal detail as possible.",
+      "Changing behavior nobody promised but somebody depends on is a breaking change — it must go through versioning and deprecation.",
+    ],
+    pitfall: "Believing undocumented means non-contractual — callers don't read the docs, they read what production actually returns.",
   },
 };
 

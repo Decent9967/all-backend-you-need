@@ -71,7 +71,7 @@ npm run build && npm start
 ```
 app/ + components/        UI shell and canvas renderer (roadmap.sh-style)
 data/roadmap.ts           canvas data (teaching order, three-line layout)
-data/notes.ts             per-node notes (85 concepts, primary-source links)
+data/notes.ts             per-node notes (88 concepts, primary-source links)
 data/framework.ts         knowledge content (domains, invariants, reading lists)
 data/scope.ts             scope registry (explicit non-goals + revisit rules)
 scripts/                  audits: note↔concept integrity, link liveness
