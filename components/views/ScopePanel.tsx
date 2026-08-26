@@ -1,4 +1,6 @@
 import { scopeEntries, type ScopeEntry } from "@/data/scope";
+import { useI18n } from "@/components/I18n";
+import { enScopeRows } from "@/data/en";
 
 /* 范围边界登记表：画布外独立页面。
    所有被评估过「不进入 / 暂缓」的知识项在此结构化留档，防止重复评估或误加入。 */
@@ -9,6 +11,34 @@ const STATUS_LABEL: Record<ScopeEntry["status"], string> = {
 };
 
 function ScopeRows({ entries }: { entries: ScopeEntry[] }) {
+  const { lang, t, tr } = useI18n();
+  if (lang === "en") {
+    return (
+      <table className="scope-table">
+        <thead>
+          <tr>
+            <th>{t.scopeCol1}</th>
+            <th>{t.scopeCol2}</th>
+            <th>{t.scopeCol3}</th>
+            <th>{t.scopeCol4}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map((e) => {
+            const en = enScopeRows[e.name];
+            return (
+              <tr key={e.name}>
+                <td className="scope-name">{tr(e.name)}</td>
+                <td className="scope-cat">{tr(e.category)}</td>
+                <td>{en?.reason ?? e.reason}</td>
+                <td className="scope-revisit">{en?.revisit ?? e.revisit ?? "—"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
+  }
   return (
     <table className="scope-table">
       <thead>
@@ -34,6 +64,7 @@ function ScopeRows({ entries }: { entries: ScopeEntry[] }) {
 }
 
 export default function ScopePanel() {
+  const { t, tr } = useI18n();
   const excluded = scopeEntries.filter((e) => e.status === "excluded");
   const deferred = scopeEntries.filter((e) => e.status === "deferred");
 
@@ -41,30 +72,24 @@ export default function ScopePanel() {
     <div className="reveal">
       <header className="domain-view-head">
         <span className="domain-view-id">SCOPE</span>
-        <h2 className="domain-view-name">范围边界登记表</h2>
+        <h2 className="domain-view-name">{tr("范围边界登记表")}</h2>
       </header>
 
-      <p className="view-lede">
-        本框架只收「换语言不失效」的治理知识。凡被评估后不纳入或暂缓的主题都在此留档——
-        <strong>新增概念前先查此表</strong>；要恢复某项，需在 PR 中说明其「重新评估条件」已满足，
-        并更新本表而不是绕过它。
-      </p>
+      <p className="view-lede">{t.scopeLede}</p>
 
       <section className="domain-block">
-        <h3 className="mini-label mini-label-accent">不进入 · {excluded.length} 项</h3>
-        <p className="scope-group-note">与定位冲突：开发基础、L3 实现层、基础设施操作，或已并入其他概念。</p>
+        <h3 className="mini-label mini-label-accent">{t.scopeExcluded.replace("{n}", String(excluded.length))}</h3>
+        <p className="scope-group-note">{t.scopeExcludedNote}</p>
         <ScopeRows entries={excluded} />
       </section>
 
       <section className="domain-block">
-        <h3 className="mini-label mini-label-accent">暂缓 · {deferred.length} 项</h3>
-        <p className="scope-group-note">值得收但条件未到：场景特定、实现细节或与其他概念重叠，满足右列条件时重评。</p>
+        <h3 className="mini-label mini-label-accent">{t.scopeDeferred.replace("{n}", String(deferred.length))}</h3>
+        <p className="scope-group-note">{t.scopeDeferredNote}</p>
         <ScopeRows entries={deferred} />
       </section>
 
-      <p className="figure-note">
-        登记表数据在 <code>data/scope.ts</code>；修改它即修改本页，与画布数据同库同评审。
-      </p>
+      <p className="figure-note">{t.scopeFootNote}</p>
     </div>
   );
 }

@@ -1,12 +1,17 @@
+import { useI18n } from "@/components/I18n";
+
 export default function D3ExpandContractDiagram() {
+  const { lang } = useI18n();
+  const L = (zh: string, en: string) => (lang === "en" ? en : zh);
+
   const cards = [
-    { x: 40, label: "阶段一 · 加列", cols: ["id", "name", "new"], note: "新列可空 · 老代码不感知", newStyle: "dash" },
-    { x: 400, label: "阶段二 · 双写", cols: ["id", "name", "new"], note: "新旧双写 · 数据回填", newStyle: "solid" },
-    { x: 760, label: "阶段三 · 删旧列", cols: ["id", "new"], note: "确认无旧读 · 再删除", newStyle: "solid", struck: "name" },
+    { x: 40, label: L("阶段一 · 加列", "Phase 1 · add column"), cols: ["id", "name", "new"], note: L("新列可空 · 老代码不感知", "new column nullable · old code unaware"), newStyle: "dash" },
+    { x: 400, label: L("阶段二 · 双写", "Phase 2 · dual write"), cols: ["id", "name", "new"], note: L("新旧双写 · 数据回填", "write old + new · backfill"), newStyle: "solid" },
+    { x: 760, label: L("阶段三 · 删旧列", "Phase 3 · drop old"), cols: ["id", "new"], note: L("确认无旧读 · 再删除", "no old readers left · then drop"), newStyle: "solid", struck: "name" },
   ];
   return (
-    <svg viewBox="0 0 1040 250" role="img" aria-label="expand-contract 三阶段：加列、双写、删旧列，实现零停机 schema 变更" className="diagram diagram-sm">
-      <title>D3 数据与状态 · expand-contract</title>
+    <svg viewBox="0 0 1040 250" role="img" aria-label={L("expand-contract 三阶段：加列、双写、删旧列，实现零停机 schema 变更", "expand-contract: add, dual-write, drop — zero-downtime schema change")} className="diagram diagram-sm">
+      <title>{L("D3 数据与状态 · expand-contract", "D3 Data & State · expand-contract")}</title>
       <defs>
         <marker id="d3-m" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L8,4 L0,8 z" className="marker-ink" />
@@ -43,7 +48,7 @@ export default function D3ExpandContractDiagram() {
           {ci < 2 ? (
             <g>
               <line x1={c.x + 246} y1={126} x2={c.x + 354} y2={126} className="mn-arrow" markerEnd="url(#d3-m)" />
-              <text x={c.x + 300} y={112} textAnchor="middle" className="mn-f">发布</text>
+              <text x={c.x + 300} y={112} textAnchor="middle" className="mn-f">{L("发布", "release")}</text>
             </g>
           ) : null}
         </g>

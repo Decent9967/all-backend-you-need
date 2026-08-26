@@ -1,5 +1,6 @@
 import { derivationEdges, domains, natures } from "@/data/framework";
 import { useI18n } from "@/components/I18n";
+import { enNatureDesc } from "@/data/en";
 
 /* 单个本性的抽屉面板：本性 + 它推导出的治理域（可点击跳转） */
 
@@ -10,7 +11,7 @@ export default function NaturePanel({
   natureId: string;
   onOpen: (id: string) => void;
 }) {
-  const { t, tr } = useI18n();
+  const { lang, t, tr } = useI18n();
   const n = natures.find((x) => x.id === natureId);
   if (!n) return null;
   const derived = derivationEdges
@@ -27,7 +28,7 @@ export default function NaturePanel({
 
       <section className="domain-block">
         <h3 className="mini-label">{t.natureLabel}</h3>
-        <p className="domain-thesis">{n.desc}。</p>
+        <p className="domain-thesis">{(lang === "en" ? enNatureDesc[n.id] ?? n.desc : n.desc)}.</p>
       </section>
 
       <section className="domain-block">
@@ -54,10 +55,7 @@ export default function NaturePanel({
         </ul>
       </section>
 
-      <p className="figure-note">
-        这条本性不接受妥协——由它推出的治理动作是必然推论，而不是行业惯例。
-        换任何语言、任何框架，它都在那里。
-      </p>
+      <p className="figure-note">{t.natureClosing}</p>
     </div>
   );
 }

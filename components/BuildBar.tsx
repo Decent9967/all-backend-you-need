@@ -1,3 +1,4 @@
+import { useI18n } from "@/components/I18n";
 export default function BuildBar({
   captions,
   stage,
@@ -7,6 +8,7 @@ export default function BuildBar({
   stage: number;
   onAdvance?: () => void;
 }) {
+  const { t } = useI18n();
   const total = captions.length - 1;
   return (
     <div
@@ -30,7 +32,7 @@ export default function BuildBar({
       </span>
       {onAdvance && stage < total ? (
         <span className="build-hint" aria-hidden="true">
-          点击搭建下一幕 →
+          {t.buildHint}
         </span>
       ) : null}
     </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Check } from "@/data/sitemap";
+import { useI18n } from "@/components/I18n";
 
 export default function CheckView({
   check,
@@ -10,13 +11,14 @@ export default function CheckView({
   title?: string | null;
   eyebrow?: string | null;
 }) {
+  const { t } = useI18n();
   const [chosen, setChosen] = useState<number | null>(null);
   return (
     <div className="reveal check">
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       {title ? <h2 className="view-title">{title}</h2> : null}
       <p className="check-question">{check.question}</p>
-      <div className="check-options" role="listbox" aria-label="选项">
+      <div className="check-options" role="listbox" aria-label={t.checkOptionsAria}>
         {check.options.map((opt, i) => {
           const state =
             chosen === null
@@ -43,11 +45,11 @@ export default function CheckView({
       </div>
       {chosen !== null ? (
         <div className="check-explain">
-          <span className="mini-label mini-label-accent">解析</span>
+          <span className="mini-label mini-label-accent">{t.checkExplain}</span>
           <p>{check.explanation}</p>
         </div>
       ) : (
-        <p className="check-hint">选一个答案——对错不重要，努力回想的过程才是记忆的关键。</p>
+        <p className="check-hint">{t.checkHint}</p>
       )}
     </div>
   );

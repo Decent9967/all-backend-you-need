@@ -53,11 +53,10 @@ any framework.
 
 ## Language
 
-UI chrome (top bar, drawer, legend, hints) supports Chinese and English via
-the toggle in the top bar. All seven domains are translated end to end —
-node titles, the 84 concept notes, 31 invariants and every gate quiz;
-a few side views (exit calibration, scope registry, layer/method pages)
-still fall back to Chinese. PRs welcome.
+The whole app is bilingual via the toggle in the top bar: node titles, the
+84 concept notes, 31 invariants, all gate quizzes, the scope registry, the
+exit views (calibration tree / decision flow) and every concept-map diagram.
+Primary sources remain in their original language. PRs welcome.
 
 ## Quick start
 

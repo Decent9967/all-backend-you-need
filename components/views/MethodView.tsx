@@ -1,13 +1,12 @@
 import MethodCycleDiagram from "@/components/minis/MethodCycleDiagram";
+import { useI18n } from "@/components/I18n";
 
 export default function MethodView() {
+  const { t } = useI18n();
   return (
     <div className="reveal">
-      <h2 className="view-title">学习四步循环</h2>
-      <p className="view-lede">
-        框架不是读一遍就完的地图。这四步构成一个可以反复运行的循环，
-        直到每次事故都能归因为止。
-      </p>
+      <h2 className="view-title">{t.methodTitle}</h2>
+      <p className="view-lede">{t.methodLede}</p>
       <div className="figure">
         <MethodCycleDiagram />
       </div>

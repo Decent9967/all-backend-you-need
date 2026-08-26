@@ -202,6 +202,131 @@ export const enTitle: Record<string, string> = {
   "康威定律与团队边界": "Conway's Law & Team Boundaries",
   "值班与升级路径": "On-Call & Escalation",
   "文档与 Runbook": "Docs & Runbooks",
+
+  /* 范围登记表：条目与分类 */
+  "范围边界登记表": "Scope Registry",
+  "Git 与版本控制基础": "Git & version-control basics",
+  "HTTP / DNS / 网络基础": "HTTP / DNS / networking basics",
+  "数据结构与算法": "Data structures & algorithms",
+  "前端基础（HTML / CSS / JS）": "Frontend basics (HTML / CSS / JS)",
+  "具体中间件用法（Redis / Kafka / Elasticsearch…）": "Middleware usage (Redis / Kafka / Elasticsearch…)",
+  "语言与框架（Spring / Django / Gin…）": "Languages & frameworks (Spring / Django / Gin…)",
+  "容器与编排操作（Docker / Kubernetes）": "Container & orchestration ops (Docker / Kubernetes)",
+  "系统设计面试题解（秒杀 / 抢红包 / 短链…）": "System-design interview solutions (flash sales / red packets / short links…)",
+  "对账系统（单列）": "Reconciliation systems (standalone)",
+  "分支与合流策略（单列）": "Branching strategy (standalone)",
+  "通知与推送渠道管理": "Notification & push channel management",
+  "多租户数据隔离": "Multi-tenant data isolation",
+  "Webhook 收发与验签": "Webhooks & signature verification",
+  "雪花 ID / 唯一 ID 生成": "Snowflake / unique-ID generation",
+  "服务发现与配置中心": "Service discovery & config centers",
+  "共识算法（Raft / Paxos）与线性一致性": "Consensus (Raft / Paxos) & linearizability",
+  "CQRS / 事件溯源": "CQRS / event sourcing",
+  "开发基础": "Dev fundamentals",
+  "计算机基础": "CS fundamentals",
+  "相邻领域": "Adjacent field",
+  "L3 实现层 ": "L3 implementation",
+  "基础设施": "Infrastructure",
+  "应用题": "Applied exercises",
+  "已并入": "Merged elsewhere",
+  "场景特定": "Scenario-specific",
+  "实现细节": "Implementation detail",
+  "基础设施层": "Infrastructure layer",
+  "基础设施理论": "Infrastructure theory",
+  "架构模式（特定）": "Architecture pattern (specific)",
+
+  /* 概念图中文化材料标题 */
+  "《高性能 MySQL》索引章节": "High Performance MySQL · index chapters",
+  "Spec-First Development 实践": "Spec-first development practices",
+  "PostgreSQL · 约束（唯一 / 主键 / 外键）": "PostgreSQL · Constraints (unique / PK / FK)",
+  "12-Factor · Processes（中文）": "12-Factor · Processes",
+  "12-Factor · Config（中文）": "12-Factor · Config",
+  "12-Factor · Logs（中文）": "12-Factor · Logs",
+  "12-Factor · Dev/Prod Parity（中文）": "12-Factor · Dev/Prod parity",
+  "小林coding · 缓存雪崩/击穿/穿透": "xiaolincoding · cache avalanche/breakdown/penetration",
+  "xxl-job 官方文档": "xxl-job documentation",
+  "《企业应用架构模式》· Money 模式": "PoEAA · Money pattern",
+  "《DDIA》第 7 章 · 事务": "DDIA · Ch.7 Transactions",
+  "《DDIA》第 7 章 · Weak Isolation": "DDIA · Ch.7 Weak Isolation",
+  "《DDIA》第 2 章 · 数据模型": "DDIA · Ch.2 Data Models",
+  "《DDIA》第 5、6 章": "DDIA · Ch.5–6",
+  "《DDIA》第 10、11 章": "DDIA · Ch.10–11",
+  "《DDIA》第 5、9 章": "DDIA · Ch.5 & 9",
+  "《DDIA》第 7、9 章": "DDIA · Ch.7 & 9",
+  "《DDIA》": "DDIA (Designing Data-Intensive Applications)",
+  "你所用的数据库的隔离级别文档（以 PostgreSQL 为例）": "Your database's isolation docs (PostgreSQL as the example)",
+  "有限状态机（Wikipedia）": "Finite-state machine (Wikipedia)",
+  "令牌桶算法（Wikipedia）": "Token bucket (Wikipedia)",
+  "Kafka 交付语义文档": "Kafka delivery semantics docs",
+  "系统版本临时表 · SQL Server 官方文档": "Temporal tables · SQL Server docs",
+  "《Release It!》第二版（Pragmatic Bookshelf）": "Release It! 2nd ed. (Pragmatic)",
+  "《Release It!》· Bulkhead（Pragmatic Bookshelf）": "Release It! · Bulkheads (Pragmatic)",
+  "《Release It!》": "Release It!",
+  "adr.github.io · 架构决策记录": "adr.github.io · Architecture Decision Records",
+  "Stripe Idempotency Keys 设计": "Stripe · Idempotency keys design",
+  "Slack Pagination (cursor) 文档": "Slack pagination (cursor) docs",
+  "Uncle Bob · The Clean Architecture（依赖规则）": "Uncle Bob · The Clean Architecture (dependency rule)",
+  "Kamil Grzybek · Modular Monolith 系列": "Kamil Grzybek · Modular Monolith series",
+  "《Software Engineering at Google》· Ch.19 Code Review（免费全文）": "Software Engineering at Google · Ch.19 Code Review (free)",
+  "《Team Topologies》官网": "Team Topologies (official site)",
+  "《Google SRE》· 处理过载": "Google SRE · Handling Overload",
+  "《Google SRE》· 数据完整性": "Google SRE · Data Integrity",
+  "《Google SRE Workbook》· NALSD 系统容量设计": "Google SRE Workbook · NALSD capacity design",
+  "《Google SRE》· Service Level Objectives": "Google SRE · Service Level Objectives",
+  "《Google SRE》· Postmortem Culture": "Google SRE · Postmortem Culture",
+  "《Google SRE》· Being On-Call": "Google SRE · Being On-Call",
+  "《Google SRE Workbook》· 事故响应与 Runbook": "Google SRE Workbook · Incident response & runbooks",
+  "《Google SRE Workbook》· Alerting on SLOs": "Google SRE Workbook · Alerting on SLOs",
+  "《Google SRE》· 监控分布式系统": "Google SRE · Monitoring Distributed Systems",
+  "《Google SRE》": "Google SRE Book",
+  "《个人信息保护法》全文 · 网信办": "PIPL (China's personal information law) · full text",
+  "GDPR 全文检索（gdpr-info.eu）": "GDPR full text (gdpr-info.eu)",
+  "3-2-1 备份原则": "The 3-2-1 backup rule",
+  "Google SRE Book · 监控章节": "Google SRE Book · monitoring chapter",
+  "OpenTelemetry 文档": "OpenTelemetry docs",
+
+  /* 树与图内标签 */
+  "为什么必须": "why they're unavoidable",
+  "治理什么": "what they govern",
+  "什么跨语言": "what transfers across languages",
+  "怎么用": "how to use it",
+  "概念词汇": "concept vocabulary",
+  "不变量": "invariants",
+  "条": "",
+  "律": "invariants",
+
+  /* 补遗：材料标题 / scope 尾部 / 树分支 */
+  "七个治理域": "Seven governance domains",
+  "四步循环": "Four-step cycle",
+  "Airflow 工作流官网": "Airflow (official site)",
+  "Envoy 官方文档": "Envoy documentation",
+  "Nginx 官方文档": "Nginx documentation",
+  "OpenTelemetry 官方文档": "OpenTelemetry documentation",
+  "Pact 文档": "Pact documentation",
+  "PostgreSQL 隔离级别文档": "PostgreSQL isolation levels docs",
+  "Protobuf 兼容性规则": "Protobuf compatibility rules",
+  "Quartz 调度器官网": "Quartz scheduler (official site)",
+  "W3C Trace Context 规范": "W3C Trace Context spec",
+  "pre-commit · Git 钩子门禁框架": "pre-commit · git hook gate framework",
+  "OWASP ASVS（V11 · 业务逻辑）": "OWASP ASVS (V11 · business logic)",
+  "NIST SP 800-207 · 零信任架构": "NIST SP 800-207 · zero trust architecture",
+  "Kubernetes · Pod 生命周期与终止（SIGTERM 宽限期）": "Kubernetes · Pod lifecycle & termination (SIGTERM grace)",
+  "DORA · Four Keys 指标": "DORA · the Four Keys metrics",
+  "SLSA · 供应链完整性框架": "SLSA · supply-chain integrity framework",
+  "《Google SRE》· 级联故障与降级": "Google SRE · Cascading Failures & Degradation",
+  "CDN 与边缘缓存": "CDN & edge caching",
+  "Reactive Streams JVM 规范 · Backpressure": "Reactive Streams JVM spec · Backpressure",
+  "FinOps / 成本治理": "FinOps / cost governance",
+  "GC 与内存模型": "GC & memory models",
+  "生产数据变更纪律": "Production data-change discipline",
+  "文件上传与对象存储（分片 / 断点 / 预签名）": "File upload & object storage (multipart / resumable / presigned)",
+  "异地多活与单元化": "Multi-region active-active & cell-based architecture",
+  "国际化（i18n 文案管理）": "Internationalization (i18n copy management)",
+  "组织实践": "Org practice",
+  "运行时 / L3": "Runtime / L3",
+  "待评估": "Pending evaluation",
+  "基础设施级容灾": "Infrastructure-grade DR",
+  "产品化需求": "Product requirement",
 };
 
 /* ---------- 概念笔记正文（按 `域|中文标题` 寻址，与 notes.ts 同键） ---------- */
@@ -1133,6 +1258,7 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D5: {
     name: "Observability",
     problem: "When the system breaks, answer within minutes: what broke, why, and which hop of the chain.",
+    cross: "Structured logging · frontend error reporting",
   },
   D6: {
     name: "Security",
@@ -1141,6 +1267,7 @@ export const enDomainMeta: Record<string, { name: string; problem: string; cross
   D7: {
     name: "Engineering Governance",
     problem: "Make conventions survive teams and time.",
+    cross: "Boundary drawing · modularity · internal packaging · no circular deps · shared common library · shared constants · CI/CD",
   },
 };
 
@@ -1237,4 +1364,192 @@ export const enChecks: Record<
     explanation:
       "Circuit breaking lives at the principle/paradigm layer — learn it once; Resilience4j, gobreaker and cockatiel are just different L3 skins.",
   },
+};
+
+/* ---------- 本性描述 / 三层 / 四步 / 校准 / 范围 / 分幕解说 ---------- */
+
+export const enNatureDesc: Record<string, string> = {
+  N1: "Requests arrive from an untrusted network",
+  N2: "Many requests arrive at once, sharing state",
+  N3: "Data outlives processes",
+  N4: "Networks, databases and third parties will fail",
+  N5: "Maintained by teams, running 24/7 in production",
+};
+
+export const enLayerNotes: Record<string, { name: string; lede: string; pace: string; examples: string[]; note: string }> = {
+  l1: {
+    name: "Principles & invariants",
+    lede: "Phenomenon-level laws that answer why it must be so.",
+    pace: "Unchanged for decades — learn one, own it forever; the highest compound interest",
+    examples: ["CAP trade-offs", "Isolation-level anomalies", "Preconditions of idempotency", "Cost model of locks and waiting"],
+    note: "What interviews probe and postmortems trace back to almost always lives on this layer.",
+  },
+  l2: {
+    name: "Paradigms & patterns",
+    lede: "Proven approaches to classes of problems, transferable across languages.",
+    pace: "Evolves yearly — the asset you carry when switching languages",
+    examples: ["Circuit breakers / bulkheads", "Event-driven", "CQRS", "Saga distributed transactions"],
+    note: "The same paradigm resurfaces in every language wearing new skin — recognizing it cuts learning cost by an order of magnitude.",
+  },
+  l3: {
+    name: "Implementation",
+    lede: "The mapping table of concrete languages, frameworks and APIs.",
+    pace: "Changes monthly — findable in docs, no need to memorize",
+    examples: ["Spring transaction annotations", "Resilience4j", "Sequelize / MyBatis", "Cloud vendor SDKs"],
+    note: "Learning a new backend language should cost only this layer.",
+  },
+};
+
+export const enStepNotes: Record<string, { practice: string }> = {
+  m1: {
+    practice: "For any new technology, ask two questions: which domain does it belong to, and which invariant does it guard? No answer means you haven't learned it yet.",
+  },
+  m2: {
+    practice: "Translate every rule you read into: does this still hold in another language? If yes, it's L1/L2 — remember it; if no, it's L3 — just look it up.",
+  },
+  m3: {
+    practice: "When learning a new language, build a mapping table: every domain concept you know → its counterpart in the new language. Fill the table and you're halfway there.",
+  },
+  m4: {
+    practice: "In every postmortem, tag the root cause with domain + the invariant that was violated. If you can attribute it, the framework has become intuition.",
+  },
+};
+
+export const enLearningSteps: Record<string, string> = {
+  m1: "Read 2–3 classic sources per domain: skeleton first, details later.",
+  m2: "For every concept ask: does it survive a language switch? What survives is L1/L2; what doesn't is L3.",
+  m3: "Reuse the whole concept layer — the only legitimate cost of a new backend language is the implementation layer.",
+  m4: "Attribute every incident to a domain and a violated invariant. Attribution means the framework has been internalized.",
+};
+
+export const enCalibration: { items: string[]; to: string }[] = [
+  {
+    items: ["Unified structured logging", "Frontend error reporting"],
+    to: "D5 Observability",
+  },
+  { items: ["Unified exception handling"], to: "D1 Contracts × D7 Governance" },
+  {
+    items: ["Boundary drawing", "Modularity", "Internal packaging", "Avoiding circular deps", "Shared common library", "Shared constants", "CI/CD"],
+    to: "D7 Engineering Governance",
+  },
+];
+
+export const enScopeRows: Record<string, { reason: string; revisit?: string }> = {
+  "Git 与版本控制基础": {
+    reason: "Target readers already have it; tool operations aren't governance knowledge — the framework only consumes its outputs (branches, reviews).",
+  },
+  "HTTP / DNS / 网络基础": {
+    reason: "Beginner material; the framework directly consumes its conclusions (HTTP caching semantics, TLS).",
+  },
+  "数据结构与算法": {
+    reason: "General CS fundamentals orthogonal to backend governance; a separate track would dilute the focus.",
+  },
+  "前端基础（HTML / CSS / JS）": {
+    reason: "The backend-relevant intersection is already covered by D1 communication contracts.",
+  },
+  "具体中间件用法（Redis / Kafka / Elasticsearch…）": {
+    reason: "Expires with a language or component swap; allowed only as material links in concept notes, never as nodes.",
+  },
+  "语言与框架（Spring / Django / Gin…）": {
+    reason: "Same as above: L3 is a mapping table, not the knowledge framework itself.",
+  },
+  "容器与编排操作（Docker / Kubernetes）": {
+    reason: "The governance concepts are already in (bulkheads, graceful shutdown, environment parity); platform operations are ops skills.",
+  },
+  "系统设计面试题解（秒杀 / 抢红包 / 短链…）": {
+    reason: "Application exercises of this framework's knowledge, not new knowledge; every solution maps onto the seven domains.",
+  },
+  "对账系统（单列）": {
+    reason: "Reconciliation as a safety net is already a key point of Streams & Batches.",
+  },
+  "分支与合流策略（单列）": {
+    reason: "Trunk-based and short branches are folded into the Feature Flags & Canaries note.",
+  },
+  "通知与推送渠道管理": {
+    reason: "The common core of channel retries / templates / backoff is covered by Delivery Semantics.",
+  },
+  "多租户数据隔离": {
+    reason: "B2B / SaaS specific; the shared parts (authorization, least privilege) are covered in D6.",
+    revisit: "When the audience is mostly SaaS builders",
+  },
+  "Webhook 收发与验签": {
+    reason: "Delivery semantics and signature anti-forgery are covered by Delivery Semantics.",
+    revisit: "When the async-contract section expands",
+  },
+  "雪花 ID / 唯一 ID 生成": {
+    reason: "The invariant level is covered by Unique Constraints; generation schemes are L3.",
+    revisit: "As an extension of the Unique Constraints note",
+  },
+  "服务发现与配置中心": {
+    reason: "The governance surface is covered by Environment Parity and Secrets Management.",
+    revisit: "When a self-built platform chapter appears",
+  },
+  "共识算法（Raft / Paxos）与线性一致性": {
+    reason: "Application backends almost never implement these; fencing tokens are touched on in Distributed Locks.",
+    revisit: "When an infrastructure chapter is added",
+  },
+  "CQRS / 事件溯源": {
+    reason: "The core ideas are covered by the transactional outbox, read/write splitting and state machines.",
+    revisit: "When the D3 data-modeling section expands",
+  },
+
+  "CDN 与边缘缓存": {
+    reason: "The contract surface is covered by HTTP Caching; the rest is platform configuration.",
+    revisit: "—",
+  },
+  "FinOps / 成本治理": {
+    reason: "Engineering governance here stays within delivery and quality; cost is an organizational budget practice.",
+    revisit: "When users ask for it",
+  },
+  "GC 与内存模型": {
+    reason: "Language-runtime knowledge; its impact on tail latency is enough to mention in the relevant notes.",
+    revisit: "—",
+  },
+  "生产数据变更纪律": {
+    reason: "Overlaps with Audit Logs and Least Privilege; a difference analysis comes first.",
+    revisit: "Next scope review round",
+  },
+  "文件上传与对象存储（分片 / 断点 / 预签名）": {
+    reason: "Large-file transfer is a separate engineering problem; its security side (type validation / path traversal) belongs to ASVS V12.",
+    revisit: "When content-management needs appear",
+  },
+  "异地多活与单元化": {
+    reason: "Beyond application-backend governance; same-city DR concepts are covered by Replication & Backup.",
+    revisit: "When multi-datacenter deployment becomes real",
+  },
+  "国际化（i18n 文案管理）": {
+    reason: "Time & Time Zones already stands alone; multilingual copy management is product scope, not engineering governance.",
+    revisit: "When serving overseas users",
+  },
+};
+
+export const enStages: Record<string, string[]> = {
+  derivation: [
+    "The left side is the premise: five natures no backend system escapes.",
+    "Serving others over an untrusted network → Contracts & APIs, Security.",
+    "Handling concurrency → Concurrency & Consistency.",
+    "Persistent state, data outliving processes → Data & State.",
+    "Dependencies that will fail → Distributed Resilience, Observability.",
+    "Long-term evolution → Observability, Engineering Governance. Seven domains, fully derived — not one of them an industry fashion.",
+  ],
+  layers: [
+    "L3 Implementation: Spring Boot, Gin, Express — replaced in months to years.",
+    "L2 Paradigms: layered architecture, 12-Factor, SRE — evolving over five to ten years.",
+    "L1 Principles: idempotency, ACID, CAP — unchanged for decades.",
+    "The shared core = L1 + L2; learning a new language ≈ replacing only the top layer.",
+  ],
+  d2: [
+    "Two requests arrive together, both doing check-then-write.",
+    "t1 · Request A reads x = 1.",
+    "t2 · Request B also reads x = 1 — a stale value.",
+    "t3 · A writes x = 2 based on the stale read.",
+    "t4 · B writes x = 3 the same way — A's update is overwritten (lost update).",
+    "The race window sits between the two reads and two writes. Countermeasures: unique constraints, idempotency tokens, state machines.",
+  ],
+  d4: [
+    "Closed (default): requests pass through normally while consecutive failures are counted.",
+    "Failures cross the threshold → open: fail fast or fall back, stop hitting the downstream.",
+    "Cooldown timer elapses → half-open: let a few probe requests through.",
+    "Probes succeed → back to closed; probes fail → back to open.",
+  ],
 };

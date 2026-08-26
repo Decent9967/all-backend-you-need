@@ -1,3 +1,11 @@
+import { useI18n } from "@/components/I18n";
+
+const PANELS_EN = [
+  { key: "metrics", head: "METRICS", name: "Metrics", q: 'answers “where did it break?”', note: "RED: rate · errors · duration" },
+  { key: "logs", head: "LOGS", name: "Logs", q: 'answers “why did it break?”', note: "structured JSON · always carries traceId" },
+  { key: "traces", head: "TRACES", name: "Traces", q: 'answers “which hop broke?”', note: "OpenTelemetry · spans chain the call path" },
+];
+
 const PANELS = [
   {
     key: "metrics",
@@ -28,14 +36,17 @@ const Y = 40;
 const H = 176;
 
 export default function PillarsDiagram() {
+  const { lang } = useI18n();
+  const L = (zh: string, en: string) => (lang === "en" ? en : zh);
+
   return (
     <svg
       viewBox="0 0 1040 300"
       role="img"
-      aria-label="可观测性三支柱：指标回答哪里坏了，日志回答为什么坏，追踪回答链路哪一跳坏；traceId 从前端贯穿到数据库"
+      aria-label={L("可观测性三支柱：指标回答哪里坏了，日志回答为什么坏，追踪回答链路哪一跳坏；traceId 从前端贯穿到数据库", "Three pillars: metrics say where, logs say why, traces say which hop; the traceId threads from frontend to database")}
       className="diagram"
     >
-      <title>可观测性三支柱</title>
+      <title>{L("可观测性三支柱", "The three pillars of observability")}</title>
       <defs>
         <marker
           id="pil-arrow"
@@ -50,7 +61,7 @@ export default function PillarsDiagram() {
         </marker>
       </defs>
 
-      {PANELS.map((p, i) => (
+      {(lang === "en" ? PANELS_EN : PANELS).map((p, i) => (
         <g key={p.key} className="pl-panel">
           <rect x={XS[i]} y={Y} width={W} height={H} rx={4} />
           <text x={XS[i] + 20} y={Y + 30} className="pl-head">
@@ -77,7 +88,7 @@ export default function PillarsDiagram() {
 
       {/* traceId 贯穿线 */}
       <text x={40} y={270} className="pl-endpoint">
-        前端
+        {L("前端", "frontend")}
       </text>
       <line
         x1={80}
@@ -88,10 +99,10 @@ export default function PillarsDiagram() {
         markerEnd="url(#pil-arrow)"
       />
       <text x={1000} y={270} textAnchor="end" className="pl-endpoint">
-        数据库
+        {L("数据库", "database")}
       </text>
       <text x={498} y={254} textAnchor="middle" className="pl-trace-label">
-        traceId 自前端生成 → 贯穿网关 · 服务 · 数据库
+        {L("traceId 自前端生成 → 贯穿网关 · 服务 · 数据库", "traceId generated at the frontend → through gateway · services · database")}
       </text>
     </svg>
   );

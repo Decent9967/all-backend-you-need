@@ -1,13 +1,12 @@
 import DecisionFlowDiagram from "@/components/DecisionFlowDiagram";
+import { useI18n } from "@/components/I18n";
 
 export default function DecisionView() {
+  const { t } = useI18n();
   return (
     <div className="reveal">
-      <h2 className="view-title">「要不要做」的判断流程</h2>
-      <p className="view-lede">
-        学完是为了判断。以后遇到任何实践、规范、依赖——先问一个问题：
-        它是否由五个本性之一推导而来。
-      </p>
+      <h2 className="view-title">{t.decisionTitle}</h2>
+      <p className="view-lede">{t.decisionLede}</p>
       <div className="figure">
         <DecisionFlowDiagram />
       </div>

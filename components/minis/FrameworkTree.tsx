@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { domains, layers, learningSteps, natures } from "@/data/framework";
+import { useI18n } from "@/components/I18n";
+import { enInvariants, enLayerNotes, enLearningSteps, enNatureDesc, enTitle } from "@/data/en";
 
 /* 可展开/收起的框架全景树：综合页用。
    结构层（概念词汇 / 不变量）弱化，不变量条目带墨蓝短标。 */
@@ -102,6 +104,45 @@ function collectExpandable(rows: Row[], acc: string[] = []): string[] {
 
 const ALL_IDS = collectExpandable(branches);
 
+/* EN 模式下的整树翻译：enTitle 直查；不变量按序对齐建 zh→en 反查表；meta 数字串就地转换 */
+const INV_MAP: Record<string, string> = {};
+for (const [did, list] of Object.entries(enInvariants)) {
+  const zh = domains.find((d) => d.id === did)?.invariants;
+  if (!zh) continue;
+  zh.forEach((z, i) => {
+    if (list[i]) INV_MAP[z] = list[i];
+  });
+}
+function locMeta(m: string): string {
+  return m
+    .replace(/(\d+)\s*条/g, "$1")
+    .replace(/(\d+)\s*域/g, "$1 domains")
+    .replace(/(\d+)\s*层/g, "$1 layers")
+    .replace(/(\d+)\s*步/g, "$1 steps")
+    .replace(/(\d+)\s*词/g, "$1 terms")
+    .replace(/(\d+)\s*律/g, "$1 invariants");
+}
+function locNote(note: string, code?: string): string {
+  if (code && enNatureDesc[code]) return enNatureDesc[code];
+  if (code && enLearningSteps[code]) return enLearningSteps[code];
+  if (code && enLayerNotes[code]) return enLayerNotes[code].pace;
+  if (enTitle[note]) return enTitle[note];
+  return note;
+}
+function locRow(r: Row, en: boolean): Row {
+  if (!en) return r;
+  const T = (x: string) => enTitle[x] ?? INV_MAP[x] ?? x;
+  return {
+    ...r,
+    label: T(r.label),
+    note: r.note ? locNote(r.note, r.code) : undefined,
+    meta: r.meta ? locMeta(r.meta) : undefined,
+    chips: r.chips?.map(T),
+    children: r.children?.map((c) => locRow(c, en)),
+  };
+}
+
+
 function TreeRows({
   rows,
   open,
@@ -168,6 +209,8 @@ function TreeRows({
 }
 
 export default function FrameworkTree() {
+  const { lang, t } = useI18n();
+  const rows = branches.map((r) => locRow(r, lang === "en"));
   const [open, setOpen] = useState<Set<string>>(() => new Set(["b-why"]));
   const toggle = (id: string) =>
     setOpen((prev) => {
@@ -181,7 +224,7 @@ export default function FrameworkTree() {
     <div className="figure figure-tight ft-figure">
       <div className="ft-topbar">
         <span className="ft-count">
-          已展开 {open.size} / {ALL_IDS.length} 支
+          {t.treeExpanded.replace("{n}", String(open.size)).replace("{total}", String(ALL_IDS.length))}
         </span>
         <div className="ft-tools">
           <button
@@ -189,23 +232,23 @@ export default function FrameworkTree() {
             className="ft-tool"
             onClick={() => setOpen(new Set(ALL_IDS))}
           >
-            全部展开
+            {t.treeAll}
           </button>
           <button
             type="button"
             className="ft-tool"
             onClick={() => setOpen(new Set())}
           >
-            全部收起
+            {t.treeNone}
           </button>
         </div>
       </div>
       <div className="ft-scroll">
         <div className="ft-root">
-          后端知识框架
-          <span className="ft-root-note">本性 → 治理域 → 三层 → 方法</span>
+          {lang === "en" ? "The backend knowledge framework" : "后端知识框架"}
+          <span className="ft-root-note">{lang === "en" ? "natures → domains → layers → method" : "本性 → 治理域 → 三层 → 方法"}</span>
         </div>
-        <TreeRows rows={branches} open={open} onToggle={toggle} />
+        <TreeRows rows={rows} open={open} onToggle={toggle} />
       </div>
     </div>
   );

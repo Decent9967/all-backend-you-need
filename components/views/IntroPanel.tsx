@@ -1,19 +1,19 @@
 import { derivationEdges, domains, natures } from "@/data/framework";
+import { useI18n } from "@/components/I18n";
+import { enNatureDesc } from "@/data/en";
 
 /* 起点面板：后端是什么 + 五个本性 → 七个域的推导关系 */
 
 export default function IntroPanel({ onOpen }: { onOpen: (id: string) => void }) {
+  const { lang, t, tr } = useI18n();
   return (
     <div className="reveal">
       <header className="domain-view-head">
         <span className="domain-view-id">START</span>
-        <h2 className="domain-view-name">后端是什么</h2>
+        <h2 className="domain-view-name">{tr("后端是什么")}</h2>
       </header>
 
-      <p className="view-lede">
-        后端工程的全部复杂性，来自五个绕不开的本性；七个治理域不是并列的分类，
-        而是这五个本性一路推导出来的结果。这张图按学习顺序组织——沿左列里程碑一站站走。
-      </p>
+      <p className="view-lede">{t.introLede}</p>
 
       <ul className="intro-natures">
         {natures.map((n) => {
@@ -25,10 +25,10 @@ export default function IntroPanel({ onOpen }: { onOpen: (id: string) => void })
             <li key={n.id}>
               <span className="intro-nature-id">{n.id}</span>
               <div>
-                <p className="intro-nature-name">{n.name}</p>
-                <p className="intro-nature-desc">{n.desc}</p>
+                <p className="intro-nature-name">{tr(n.name)}</p>
+                <p className="intro-nature-desc">{lang === "en" ? enNatureDesc[n.id] ?? n.desc : n.desc}</p>
                 <p className="intro-nature-targets">
-                  推导出：
+                  {t.introDerives}
                   {targets.map((d) => (
                     <button
                       key={d!.id}
@@ -36,7 +36,7 @@ export default function IntroPanel({ onOpen }: { onOpen: (id: string) => void })
                       className="intro-target"
                       onClick={() => onOpen(d!.id.toLowerCase())}
                     >
-                      {d!.name}
+                      {tr(d!.name)}
                     </button>
                   ))}
                 </p>
@@ -46,10 +46,7 @@ export default function IntroPanel({ onOpen }: { onOpen: (id: string) => void })
         })}
       </ul>
 
-      <p className="figure-note">
-        每一站的组框副标题都标着「源 N·」——记住推导关系，忘了任何一个域在解决什么问题时，
-        回到这条链上找。
-      </p>
+      <p className="figure-note">{t.introNote}</p>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { readingList } from "@/data/framework";
 import PillarsDiagram from "@/components/PillarsDiagram";
 import BuildBar from "@/components/BuildBar";
 import { useI18n } from "@/components/I18n";
-import { enDomainMeta, enInvariants } from "@/data/en";
+import { enDomainMeta, enInvariants, enStages } from "@/data/en";
 import { steps } from "@/data/sitemap";
 import D1ContractDiagram from "@/components/minis/D1ContractDiagram";
 import D2RaceDiagram from "@/components/minis/D2RaceDiagram";
@@ -35,7 +35,8 @@ export default function DomainView({
   const meta = lang === "en" ? enDomainMeta[domain.id] : undefined;
   const invariants = lang === "en" ? enInvariants[domain.id] ?? domain.invariants : domain.invariants;
   const Mini = MINIS[domain.id];
-  const captions = steps.find((s) => s.id === domain.id.toLowerCase())?.stages;
+  const zhStages = steps.find((s) => s.id === domain.id.toLowerCase())?.stages;
+  const captions = lang === "en" ? enStages[domain.id.toLowerCase()] ?? zhStages : zhStages;
   const reading = readingList.find((r) => r.domain === domain.id);
   return (
     <div className="reveal domain-view">
@@ -56,7 +57,7 @@ export default function DomainView({
             <h3 className="mini-label">{t.dvConcepts}</h3>
             <ul className="chips">
               {domain.concepts.map((c) => (
-                <li key={c}>{c}</li>
+                <li key={c}>{tr(c)}</li>
               ))}
             </ul>
           </section>
@@ -84,7 +85,7 @@ export default function DomainView({
           <section className="domain-block domain-invariant-panel">
             <h3 className="mini-label mini-label-accent">{t.dvInvariants}</h3>
             <ul className="domain-invariant-list">
-              {domain.invariants.map((inv) => (
+              {invariants.map((inv) => (
                 <li key={inv}>{inv}</li>
               ))}
             </ul>
@@ -107,12 +108,12 @@ export default function DomainView({
               m.url ? (
                 <li key={m.title}>
                   <a className="note-material" href={m.url} target="_blank" rel="noopener noreferrer">
-                    {m.title} ↗
+                    {tr(m.title)} ↗
                   </a>
                 </li>
               ) : (
                 <li key={m.title}>
-                  <span className="note-material plain">{m.title}</span>
+                  <span className="note-material plain">{tr(m.title)}</span>
                 </li>
               ),
             )}

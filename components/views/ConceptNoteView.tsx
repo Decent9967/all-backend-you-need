@@ -93,10 +93,10 @@ export default function ConceptNoteView({
               <li key={m.title}>
                 {m.url ? (
                   <a className="note-material" href={m.url} target="_blank" rel="noopener noreferrer">
-                    {m.title} ↗
+                    {tr(m.title)} ↗
                   </a>
                 ) : (
-                  <span className="note-material plain">{m.title}</span>
+                  <span className="note-material plain">{tr(m.title)}</span>
                 )}
               </li>
             ))}
